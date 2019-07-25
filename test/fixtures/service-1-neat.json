@@ -1,0 +1,18 @@
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "name": "myappservice"
+    },
+    "spec": {
+        "clusterIP": "None",
+        "ports": [
+            {
+                "port": 2222
+            }
+        ],
+        "selector": {
+            "name": "myapp"
+        }
+    }
+}

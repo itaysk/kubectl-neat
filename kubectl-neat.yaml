@@ -1,0 +1,28 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: neat
+spec:
+  version: "v0.0.1"
+  shortDescription: Clean up Kuberntes yaml and json output to make it readable.
+  platforms:
+    - selector:
+        matchExpressions:
+        - {key: os, operator: In, values: [darwin]} # TODO: add add linux after checking
+      uri: https://github.com/itaysk/kubectl-neat/releases/v0.0.1.tar.gz
+      sha256: ${sha256}
+      files:
+        - from: "/dist/*"
+          to: "."
+      bin: "./kubectl-neat"
+  homepage: https://github.com/itaysk/kubectl-neat
+  caveats: |
+    This plugin has the following dependencies:
+      - bash
+      - jq
+      - yq
+      - sponge
+      - readlink
+  description: |
+    If you try to `kubectl get` resources you have created, they will no longer look like what you originally authored, and will be unreadably verbose.  
+    `kubectl-neat` cleans up that redundant information for you.

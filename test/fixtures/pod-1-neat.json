@@ -1,0 +1,40 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "labels": {
+            "name": "myapp"
+        },
+        "name": "myapp"
+    },
+    "spec": {
+        "containers": [
+            {
+                "image": "nginx",
+                "name": "myapp",
+                "ports": [
+                    {
+                        "containerPort": 1234
+                    }
+                ]
+            }
+        ],
+        "priority": 0,
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "tolerations": [
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            }
+        ]
+    }
+}

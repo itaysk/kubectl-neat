@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2019-04-24T20:12:14Z"
+  name: myappservice
+  namespace: default
+  resourceVersion: "187503"
+  selfLink: /api/v1/namespaces/default/services/myappservice
+  uid: 409de7fb-66cd-11e9-b6fa-0800271788ca
+spec:
+  clusterIP: None
+  ports:
+  - port: 2222
+    protocol: TCP
+    targetPort: 2222
+  selector:
+    name: myapp
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
