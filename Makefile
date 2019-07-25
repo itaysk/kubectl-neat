@@ -1,5 +1,5 @@
 
-.PHONY: test test-unit test-component test-e2e-kubectl test-install build dist
+.PHONY: test test-unit test-component test-e2e-kubectl test-install build dist clean
 
 test: test-unit test-component test-e2e-kubectl test-install
 
@@ -16,14 +16,18 @@ test-e2e-kubectl: dist
 test-install: dist
 	bats ./test/install.bats
 
+os = $(shell uname -s | tr '[:upper:]' '[:lower:]')
 dist: build
-	cp src/* dist/
-
-build: dist/kube-defaulter
-
-dist/kube-defaulter: kube-defaulter/kube-defaulter
+	mkdir -p dist
+	cp src/* dist/		
+	cp dependencies/$(os)/* dist/
 	cp kube-defaulter/kube-defaulter dist/kube-defaulter
 
+build: kube-defaulter/kube-defaulter
+
 kube-defaulter/kube-defaulter:
-	cd kube-defaulter && go build
-	
+	cd kube-defaulter && GOOS=$(os) go build
+
+clean:
+	rm -rf ./dist
+	rm kube-defaulter/kube-defaulter

@@ -25,37 +25,40 @@ dir=$(detectDir "$0")
 . "$dir"/common.sh
 resource_construct_file="$dir"/construct.resource
 resource_delete_file="$dir"/delete.resource
+jq="$dir"/jq
+yq="$dir"/yq
+sponge="$dir"/sponge
 
 o=$(detectOutput "$@")
 tmp=$(mktemp)
 getInput "$@">"$tmp"
 
 if [ "$o" == "yaml" ]; then
-    yq r --tojson "$tmp" | sponge "$tmp"
+    "$yq" r --tojson "$tmp" | "$sponge" "$tmp"
 fi
 
 # step 1 - keep only wanted paths (whitelist)
-jq --from-file "$resource_construct_file" "$tmp" | sponge "$tmp"
+"$jq" --from-file "$resource_construct_file" "$tmp" | "$sponge" "$tmp"
 
 # step 2 - delete unwanted paths (blacklist)
 while read -r line; do
-    jq ". as \$in | try del($line) catch \$in" "$tmp" | sponge "$tmp"
+    "$jq" ". as \$in | try del($line) catch \$in" "$tmp" | "$sponge" "$tmp"
 done <"$resource_delete_file"
 
 # step 3 - delete empty
-jq 'delpaths([ paths((type == "object" or type == "array") and length==0) ])' "$tmp" | sponge "$tmp"
+"$jq" 'delpaths([ paths((type == "object" or type == "array") and length==0) ])' "$tmp" | "$sponge" "$tmp"
 
 # step 4 - delete defaults
 while read -r line; do
-    json_path=$(jq --raw-output 'join(".")'<<<"$line")
+    json_path=$("$jq" --raw-output 'join(".")'<<<"$line")
     isDefault=$("$dir"/kube-defaulter --path "$json_path" --command "is-default" <"$tmp"  || echo "false")
     if [ "$isDefault" == 'true' ]; then
-        jq --argjson path "$line" 'delpaths([$path])' "$tmp" | sponge "$tmp"
+        "$jq" --argjson path "$line" 'delpaths([$path])' "$tmp" | "$sponge" "$tmp"
     fi
-done <<<"$(jq --compact-output '.spec | paths(scalars) | ["spec", .[]]' "$tmp")"
+done <<<"$("$jq" --compact-output '.spec | paths(scalars) | ["spec", .[]]' "$tmp")"
 
 if [ "$o" == "yaml" ]; then
-    yq r "$tmp" | sponge "$tmp"
+    "$yq" r "$tmp" | "$sponge" "$tmp"
 fi
 
 cat "$tmp"

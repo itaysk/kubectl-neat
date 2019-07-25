@@ -29,8 +29,6 @@ If you try to `kubectl get` resources you have created, they will no longer look
 The easiest way is to add kubectl-neat as a kubectl plugin:
 [https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
 
-(Note the required [dependencies](#dependencies)
-
 Once installed, any `kubectl get` command can be replaced by `kubectl neat`. For example:
 
 ```
@@ -62,17 +60,5 @@ kubectl get service myservice -o json | KUBECTL_OUTPUT=json kubectl-neat
 ```
 
 ## Design
-
-### Dependencies
-
-The scripts are built using, and require the following dependencies:
-
-- bash
-- jq
-- yq
-- sponge
-- readlink
-
-### Design choices
 
 This tool has evolved over time from a simple jq script, to a collection of jq scripts, to an additional Go utility, and so on. Perhaps this seems like overuse of bash and other dependencies, and it might be true. I'll probably rewrite it completely in Go once I get the chance.
