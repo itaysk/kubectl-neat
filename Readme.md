@@ -2,6 +2,12 @@
 
 Clean up Kuberntes yaml and json output to make it readable.
 
+## Demo
+
+Here is a result of a `kubectl get pod -oyaml` for a simple Pod. The lines marked in red are considered redundant and will be removed from the output by kubectl-neat.
+
+![demo](./demo.png)
+
 ## Why
 
 When you create a Kubernetes resource, let's say a Pod, Kubernetes adds a whole bunch of internal system information to the yaml or json that you originally authored. This includes:
