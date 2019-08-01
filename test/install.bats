@@ -3,8 +3,9 @@
 @test "krew install" {
     dir=$(mktemp -d)
     plugin="neat2"
-    ./krew-package.sh $(uname -s) "$plugin" "$dir"
-    kubectl krew install --manifest="$dir"/"$plugin".yaml --archive="$dir"/kubectl-neat.tar.gz
+    runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    ./krew-package.sh "$runtime_os" "$plugin" "$dir"
+    kubectl krew install --manifest="$dir/$plugin.yaml" --archive="$dir/kubectl-neat_$runtime_os.tar.gz"
 
     run kubectl "$plugin" svc kubernetes
 

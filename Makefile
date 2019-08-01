@@ -16,18 +16,18 @@ test-e2e-kubectl: dist
 test-install: dist
 	bats ./test/install.bats
 
-os = $(shell uname -s | tr '[:upper:]' '[:lower:]')
-dist: build
-	mkdir -p dist
-	cp src/* dist/		
-	cp dependencies/$(os)/* dist/
-	cp kube-defaulter/kube-defaulter dist/kube-defaulter
+os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
+dist: kube-defaulter/kube-defaulter_$(os)
+	mkdir -p dist/$(os)
+	cp src/* dist/$(os)/
+	cp dependencies/$(os)/* dist/$(os)/
+	cp kube-defaulter/kube-defaulter_$(os) dist/$(os)/kube-defaulter
 
-build: kube-defaulter/kube-defaulter
+build: kube-defaulter/kube-defaulter_$(os)
 
-kube-defaulter/kube-defaulter:
-	cd kube-defaulter && GOOS=$(os) go build
+kube-defaulter/kube-defaulter_%:
+	cd kube-defaulter && GOOS=$* go build -o $(@F)
 
 clean:
 	rm -rf ./dist
-	rm kube-defaulter/kube-defaulter
+	rm kube-defaulter/kube-defaulter*

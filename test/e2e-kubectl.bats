@@ -1,11 +1,12 @@
 #!/usr/bin/env bats
 
 function setup() {
+    runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]')
     tmpdir=$(mktemp -d)
     # rename the plugin to avoid conflicts with existing installation
     plugin_name="neat2"
     plugin="$tmpdir"/kubectl-"$plugin_name"
-    ln -s $(pwd)/dist/kubectl-neat "$plugin"
+    ln -s "$(pwd)/dist/$runtime_os/kubectl-neat" "$plugin"
     # PATH modification here has no external affect since bats runs in a subshell
     PATH="$PATH":"$tmpdir"
     kubectl delete -f ./test/fixtures/pod-1-neat.json 2>/dev/null || true
