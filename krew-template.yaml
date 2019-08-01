@@ -3,7 +3,7 @@ kind: Plugin
 metadata:
   name: neat
 spec:
-  version: "v0.0.1"
+  version: "v0.1.0"
   shortDescription: Clean up Kuberntes yaml and json output to make it readable.
   homepage: https://github.com/itaysk/kubectl-neat
   description: |
@@ -14,7 +14,7 @@ spec:
         matchLabels:
           os: darwin
           arch: amd64
-      uri: https://github.com/itaysk/kubectl-neat/releases/v0.0.1.tar.gz
+      uri: https://github.com/itaysk/kubectl-neat/releases/v0.1.0/downloads/kubectl-neat_darwin.tar.gz
       sha256: ${sha256}
       files:
         - from: "/dist/darwin/*"
@@ -24,7 +24,7 @@ spec:
         matchLabels:
           os: linux
           arch: amd64
-      uri: https://github.com/itaysk/kubectl-neat/releases/v0.0.1.tar.gz
+      uri: https://github.com/itaysk/kubectl-neat/releases/v0.1.0/downloads/kubectl-neat_linux.tar.gz
       sha256: ${sha256}
       files:
         - from: "/dist/linux/*"
