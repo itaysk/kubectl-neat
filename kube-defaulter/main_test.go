@@ -88,7 +88,7 @@ func TestGetKubeDefault(t *testing.T) {
 						{
 							"image": "foo:bar",
 							"name": "myapp",
-							"terminationMessagePath": "/dev/termination-log""
+							"terminationMessagePath": "/dev/termination-log"
 						}
 					]
 				}
