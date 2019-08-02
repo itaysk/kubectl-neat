@@ -3,10 +3,8 @@ module github.com/itaysk/kubectl-export/kube-defaulter
 go 1.12
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/tidwall/gjson v1.3.2
 	github.com/tidwall/sjson v1.0.4
-	k8s.io/api v0.0.0
 	k8s.io/apimachinery v0.0.0
 	k8s.io/client-go v0.0.0
 	k8s.io/kubernetes v1.15.1
