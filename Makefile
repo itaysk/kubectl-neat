@@ -17,11 +17,13 @@ test-install: dist
 	bats ./test/install.bats
 
 os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
-dist: kube-defaulter/kube-defaulter_$(os)
-	mkdir -p dist/$(os)
-	cp src/* dist/$(os)/
-	cp dependencies/$(os)/* dist/$(os)/
-	cp kube-defaulter/kube-defaulter_$(os) dist/$(os)/kube-defaulter
+dist: dist/$(os)
+
+dist/%: kube-defaulter/kube-defaulter_%
+	mkdir -p dist/$*
+	cp src/* dist/$*/
+	cp dependencies/$*/* dist/$*/
+	cp kube-defaulter/kube-defaulter_$* dist/$*/kube-defaulter
 
 build: kube-defaulter/kube-defaulter_$(os)
 
@@ -32,7 +34,7 @@ clean:
 	rm -rf ./dist ./krew
 	rm kube-defaulter/kube-defaulter*
 
-krew: dist
+krew: dist/darwin dist/linux
 	mkdir -p ./krew
 	./krew-package.sh 'darwin' 'neat' 'krew'
 	./krew-package.sh 'linux' 'neat' 'krew'
