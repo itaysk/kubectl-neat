@@ -1,6 +1,6 @@
 # kubectl-neat
 
-Clean up Kuberntes yaml and json output to make it readable.
+Clean up Kubernetes yaml and json output to make it readable.
 
 ## Demo
 
