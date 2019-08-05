@@ -22,6 +22,8 @@ If you try to `kubectl get` resources you have created, they will no longer look
 
 ## Usage
 
+Before installing, make sure you have the required [dependendies](#dependencies).
+
 ### kubectl plugin - Comming soon to krew
 
 > kubectl-neat is not on krew (kubectl plugin manager) yet but can be manually added as kubectl plugin 
@@ -60,5 +62,15 @@ kubectl get service myservice -o json | KUBECTL_OUTPUT=json kubectl-neat
 ```
 
 ## Design
+
+### Dependencies
+
+The scripts are built using, and require the following dependencies:
+
+- jq
+- yq
+- sponge (from moreutils)
+
+### Design choices
 
 This tool has evolved over time from a simple jq script, to a collection of jq scripts, to an additional Go utility, and so on. Perhaps this seems like overuse of bash and other dependencies, and it might be true. I'll probably rewrite it completely in Go once I get the chance.

@@ -41,3 +41,11 @@ exe="dist/$runtime_os/kubectl-neat"
     diff <(jq -S .<<<"$ouputjson") <(jq -S . ./test/fixtures/pv-1-neat.json)
 }
 
+@test "missing dependency" {
+    backup=$(which jq)
+    sudo mv "$backup" "${backup}_"
+    run "$exe"
+    sudo mv "${backup}_" "$backup"
+    [ "$status" -eq 1 ]
+    [ "$output" = "at least one dependency is missing" ]
+}

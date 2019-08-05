@@ -13,9 +13,8 @@ spec:
     For example `kubectl neat pod mypod -o yaml` or
     `kubectl get pod mypod -o yaml | kubectl neat`.
   caveats: |
-    This plugin depends on the following binaries which are bundled into the plugin -
-    `jq`, `yq` and `sponge`, as well as the `kube-defaulter` included utility.
-    glibc runtime is currently assumed for dynamic linking.
+    This plugin depends on the following binaries -
+    `jq`, `yq` and `sponge` (from `moreutils`), which should be installed by the user
   platforms:
     - selector:
         matchLabels:

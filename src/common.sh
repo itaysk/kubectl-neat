@@ -53,3 +53,11 @@ function getInput() {
     fi
 }
 
+# verify that the required dependencies are present
+function checkDependencies() {
+    jq --version >/dev/null 2>&1 && \
+    yq --version >/dev/null 2>&1 && \
+    echo "test" | sponge >/dev/null 2>&1 && \
+    true && return
+    echo "at least one dependency is missing" >&2 && false
+}

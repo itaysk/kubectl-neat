@@ -104,3 +104,21 @@
     rm -rf "$dir1"
     [ $output == "$dir1" ]
 }
+
+# Testing checkDependencies
+
+@test "checkDependencies - all ok" {
+    run checkDependencies
+    [ "$status" -eq 0 ]
+    echo $output
+    [ "$output" = "" ]
+}
+
+@test "missing dependency" {
+    backup=$(which jq)
+    sudo mv "$backup" "${backup}_"
+    run checkDependencies
+    sudo mv "${backup}_" "$backup"
+    [ "$status" -eq 1 ]
+    [ "$output" = "at least one dependency is missing" ]
+}

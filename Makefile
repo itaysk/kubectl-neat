@@ -22,7 +22,6 @@ dist: dist/$(os)
 dist/%: kube-defaulter/kube-defaulter_%
 	mkdir -p dist/$*
 	cp src/* dist/$*/
-	cp dependencies/$*/* dist/$*/
 	cp kube-defaulter/kube-defaulter_$* dist/$*/kube-defaulter
 
 build: kube-defaulter/kube-defaulter_$(os)

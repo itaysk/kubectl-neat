@@ -20,14 +20,17 @@ if [ -n "$BATS_TEST_FILENAME" ]; then
     return 0
 fi
 
+
 dir=$(detectDir "$0")
 
 . "$dir"/common.sh
+checkDependencies || exit 1
+
 resource_construct_file="$dir"/construct.resource
 resource_delete_file="$dir"/delete.resource
-jq="$dir"/jq
-yq="$dir"/yq
-sponge="$dir"/sponge
+jq=jq
+yq=yq
+sponge=sponge
 
 o=$(detectOutput "$@")
 tmp=$(mktemp)
