@@ -1,6 +1,6 @@
 # kubectl-neat
 
-Clean up Kubernetes yaml and json output to make it readable.
+Remove clutter from Kubernetes manifests to make them more readable.
 
 ## Demo
 

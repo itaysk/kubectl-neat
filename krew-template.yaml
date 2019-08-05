@@ -4,17 +4,20 @@ metadata:
   name: neat
 spec:
   version: "v0.1.1"
-  shortDescription: Clean up Kubernetes yaml and json output to make it readable.
+  shortDescription: Remove clutter from Kubernetes manifests to make them more readable.
   homepage: https://github.com/itaysk/kubectl-neat
   description: |
     If you try to `kubectl get` resources you have just created,
     they be unreadably verbose. `kubectl-neat` cleans up that redundant information.
     Can be used as a `kubectl get` wrapper, or by piping into it.
-    For example `kubectl neat pod mypod -o yaml` or
-    `kubectl get pod mypod -o yaml | kubectl neat`.
+    Examples:
+    `$ kubectl neat pod mypod -o yaml`
+    `$ kubectl get pod mypod -o yaml | kubectl neat`
   caveats: |
-    This plugin depends on the following binaries -
-    `jq`, `yq` and `sponge` (from `moreutils`), which should be installed by the user
+    This plugin depends on the following utilities which should be installed manually:
+    - `jq`
+    - `yq`
+    - `sponge` (from `moreutils`)
   platforms:
     - selector:
         matchLabels:
