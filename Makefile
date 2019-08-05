@@ -1,7 +1,7 @@
 
-.PHONY: test test-unit test-component test-e2e-kubectl test-install build dist clean
+.PHONY: test test-unit test-component test-kubectl test-install build dist clean
 
-test: test-unit test-component test-e2e-kubectl test-install
+test: test-unit test-component test-kubectl test-install
 
 test-unit:
 	bats ./test/unit.bats
@@ -10,8 +10,8 @@ test-unit:
 test-component: dist
 	bats ./test/component.bats
 
-test-e2e-kubectl: dist
-	bats ./test/e2e-kubectl.bats
+test-kubectl: dist
+	bats ./test/kubectl.bats
 
 test-install: dist
 	bats ./test/install.bats
