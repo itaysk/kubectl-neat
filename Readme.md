@@ -26,7 +26,7 @@ Before installing, make sure you have the required [dependendies](#dependencies)
 
 ### kubectl plugin - Comming soon to krew
 
-> kubectl-neat is not on krew (kubectl plugin manager) yet but can be manually added as kubectl plugin 
+`kubectl krew install neat`
 
 The easiest way is to add kubectl-neat as a kubectl plugin:
 [https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
