@@ -24,12 +24,9 @@ If you try to `kubectl get` resources you have created, they will no longer look
 
 Before installing, make sure you have the required [dependendies](#dependencies).
 
-### kubectl plugin - Comming soon to krew
+### kubectl plugin
 
 `kubectl krew install neat`
-
-The easiest way is to add kubectl-neat as a kubectl plugin:
-[https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
 
 Once installed, any `kubectl get` command can be replaced by `kubectl neat`. For example:
 
