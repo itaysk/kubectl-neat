@@ -1,13 +1,17 @@
-module github.com/itaysk/kubectl-export/kube-defaulter
+module github.com/itaysk/kubectl-neat
 
 go 1.12
 
 require (
+	github.com/ghodss/yaml v1.0.0
+	github.com/jeremywohl/flatten v0.0.0-20180923035001-588fe0d4c603
+	github.com/sirupsen/logrus v1.2.0
+	github.com/spf13/cobra v0.0.5
 	github.com/tidwall/gjson v1.3.2
 	github.com/tidwall/sjson v1.0.4
 	k8s.io/apimachinery v0.0.0
 	k8s.io/client-go v0.0.0
-	k8s.io/kubernetes v1.15.1
+	k8s.io/kubernetes v1.15.2
 )
 
 //https://github.com/kubernetes/kubernetes/issues/79384#issuecomment-505627280

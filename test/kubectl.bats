@@ -30,12 +30,3 @@ function teardown() {
     local outputjson=$(yq r --tojson -<<<"$output")
     jq --exit-status --argfile desired ./test/fixtures/pod-1-neat.json 'contains($desired)' <<<"$outputjson"
 }
-
-@test "missing dependency" {
-    backup=$(which jq)
-    sudo mv "$backup" "${backup}_"
-    run kubectl "$plugin_name" svc kubernetes -o yaml
-    sudo mv "${backup}_" "$backup"
-    [ "$status" -eq 1 ]
-    [ "$output" = "at least one dependency is missing" ]
-}

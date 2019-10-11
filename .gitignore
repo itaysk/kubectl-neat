@@ -1,3 +1,4 @@
 .vscode
 dist
 krew
+kubectl-neat_*

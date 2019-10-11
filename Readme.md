@@ -1,3 +1,5 @@
+> This readme describes v1.0.0, which is still pending in krew index (the lastest in krew index is v0.1.1).
+
 # kubectl-neat
 
 Remove clutter from Kubernetes manifests to make them more readable.
@@ -20,54 +22,35 @@ When you create a Kubernetes resource, let's say a Pod, Kubernetes adds a whole 
 If you try to `kubectl get` resources you have created, they will no longer look like what you originally authored, and will be unreadably verbose.   
 `kubectl-neat` cleans up that redundant information for you.
 
+## Installion
+
+```bash
+kubectl krew install neat
+```
+
+or just download the binary if you prefer.
+
+When used as a kubectl plugin the command is `kubectl neat`, and when used as a standalone executable it's `kubectl-neat`.
+
 ## Usage
 
-Before installing, make sure you have the required [dependendies](#dependencies).
+You can pipe `kubectl get -o yaml/json` output to it:
 
-### kubectl plugin
-
-`kubectl krew install neat`
-
-Once installed, any `kubectl get` command can be replaced by `kubectl neat`. For example:
-
-```
-kubectl neat pod mypod
-kubectl neat svc myservice -o json
+```bash
+kubectl get pod mypod -o yaml | kubectl neat
 ```
 
-Any valid option that `kubectl get` accepts should be usable here.
+or any other yaml/json as long as it's a valid Kubernetes resource
 
-### standalone executable
-
-If you don't want to use as kubectl plugin, you can `kubectl get` the resources as you normally would do, and then pipe into `kubectl-neat` executable.
-
-Then use by piping into:
-
-```
-kubectl get pod mypod -o yaml | kubectl-neat
-kubectl get service myservice -o json | kubectl-neat
+```bash
+kubectl neat <./my-pod.json
 ```
 
-### Output format
+or just replace any `kubectl get` command with `kubectl neat`. For example:
 
-The scripts support both json and yaml as output formats. Output format can be specified using a shell variable named `KUBECTL_OUTPUT` or by the familiar `-o` and `--output` options.  
-When both are specified, the explicit flag takes precedence over the shell variable.  
-If unspecified, output will default to yaml.
-
-```
-kubectl get service myservice -o json | KUBECTL_OUTPUT=json kubectl-neat
+```bash
+kubectl neat pod mypod -oyaml
+kubectl neat svc myservice --output json
 ```
 
-## Design
-
-### Dependencies
-
-The scripts are built using, and require the following dependencies:
-
-- jq
-- yq
-- sponge (from moreutils)
-
-### Design choices
-
-This tool has evolved over time from a simple jq script, to a collection of jq scripts, to an additional Go utility, and so on. Perhaps this seems like overuse of bash and other dependencies, and it might be true. I'll probably rewrite it completely in Go once I get the chance.
+Any valid option that `kubectl get` accepts should be usable.

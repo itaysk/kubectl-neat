@@ -4,8 +4,7 @@
 test: test-unit test-component test-kubectl test-install
 
 test-unit:
-	bats ./test/unit.bats
-	#kube-defaulter tests are in it's make file
+	go test ./...
 
 test-component: dist
 	bats ./test/component.bats
@@ -19,19 +18,19 @@ test-install: dist
 os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 dist: dist/$(os)
 
-dist/%: kube-defaulter/kube-defaulter_%
+dist/%: kubectl-neat_%
 	mkdir -p dist/$*
-	cp src/* dist/$*/
-	cp kube-defaulter/kube-defaulter_$* dist/$*/kube-defaulter
+	cp kubectl-neat_$* dist/$*/kubectl-neat
 
-build: kube-defaulter/kube-defaulter_$(os)
+build: kubectl-neat_$(os)
 
-kube-defaulter/kube-defaulter_%:
-	cd kube-defaulter && GOOS=$* go build -o $(@F)
+SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+kubectl-neat_%: $(SRC)
+	GOOS=$* go build -o $(@F)
 
 clean:
 	rm -rf ./dist ./krew
-	rm kube-defaulter/kube-defaulter*
+	rm kubectl-neat*
 
 krew: dist/darwin dist/linux
 	mkdir -p ./krew
