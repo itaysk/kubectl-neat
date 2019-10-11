@@ -21,7 +21,6 @@
             }
         ],
         "priority": 0,
-        "serviceAccount": "default",
         "serviceAccountName": "default",
         "tolerations": [
             {

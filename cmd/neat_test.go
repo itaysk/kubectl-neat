@@ -108,6 +108,8 @@ func TestNeatPod(t *testing.T) {
 							]
 						}
 					],
+					"serviceAccount": "default",
+					"serviceAccountName": "default",
 					"volumes": [
 						{
 							"name": "default-token-nmshj",
@@ -150,6 +152,7 @@ func TestNeatPod(t *testing.T) {
 							]
 						}
 					],
+					"serviceAccountName": "default",
 					"volumes": [
 						{
 							"name": "my",
@@ -342,7 +345,6 @@ func TestNeat(t *testing.T) {
 						}
 					],
 					"priority": 0,
-					"serviceAccount": "default",
 					"serviceAccountName": "default",
 					"tolerations": [
 						{

@@ -111,6 +111,7 @@ func neatPod(in string) (string, error) {
 		}
 	}
 	in, err = sjson.Delete(in, "spec.nodeName")
+	in, err = sjson.Delete(in, "spec.serviceAccount") //Deprecated: Use serviceAccountName instead
 	if err != nil {
 		//
 	}
