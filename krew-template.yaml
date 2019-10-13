@@ -8,11 +8,11 @@ spec:
   homepage: https://github.com/itaysk/kubectl-neat
   description: |
     If you try to `kubectl get` resources you have just created,
-    they be unreadably verbose. `kubectl-neat` cleans up that redundant information.
-    Can be used as a `kubectl get` wrapper, or by piping into it.
+    they be unreadably verbose. `kubectl-neat` cleans that up by
+    removing default values, runtime information, and other internal fields.
     Examples:
-    `$ kubectl neat pod mypod -o yaml`
     `$ kubectl get pod mypod -o yaml | kubectl neat`
+    `$ kubectl neat pod mypod -o yaml`
   platforms:
     - selector:
         matchLabels:
