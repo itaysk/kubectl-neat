@@ -1,5 +1,3 @@
-> This readme describes v1.0.0, which is still pending in krew index (the lastest in krew index is v0.1.1).
-
 # kubectl-neat
 
 Remove clutter from Kubernetes manifests to make them more readable.
