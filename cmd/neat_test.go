@@ -131,14 +131,7 @@ func TestNeatPod(t *testing.T) {
 			expect: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
-				"metadata": {
-					"labels": {
-						"name": "myapp"
-					},
-					"name": "myapp",
-					"namespace": "default"
-				},
-				"spec": {
+					"spec": {
 					"containers": [
 						{
 							"image": "nginx",
