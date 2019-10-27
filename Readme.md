@@ -4,7 +4,7 @@ Remove clutter from Kubernetes manifests to make them more readable.
 
 ## Demo
 
-Here is a result of a `kubectl get pod -oyaml` for a simple Pod. The lines marked in red are considered redundant and will be removed from the output by kubectl-neat.
+Here is a result of a `kubectl get pod -o yaml` for a simple Pod. The lines marked in red are considered redundant and will be removed from the output by kubectl-neat.
 
 ![demo](./demo.png)
 
@@ -20,7 +20,7 @@ When you create a Kubernetes resource, let's say a Pod, Kubernetes adds a whole 
 If you try to `kubectl get` resources you have created, they will no longer look like what you originally authored, and will be unreadably verbose.   
 `kubectl-neat` cleans up that redundant information for you.
 
-## Installion
+## Installation
 
 ```bash
 kubectl krew install neat
