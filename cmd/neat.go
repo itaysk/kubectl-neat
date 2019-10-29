@@ -46,10 +46,17 @@ func Neat(in string) (string, error) {
 		}
 	}
 
-	// defaults neating
-	draft, err = defaults.NeatDefaults(draft)
-	if err != nil {
-		return draft, fmt.Errorf("error in neatDefaults : %v", err)
+	if kind == "List" {
+		draft, err = neatList(draft)
+		if err != nil {
+			return draft, fmt.Errorf("error in neatList : %v", err)
+		}
+	} else {
+		// defaults neating of a single resource
+		draft, err = defaults.NeatDefaults(draft)
+		if err != nil {
+			return draft, fmt.Errorf("error in neatDefaults : %v", err)
+		}
 	}
 
 	// general neating
@@ -180,4 +187,20 @@ func isResultEmpty(j gjson.Result) bool {
 		return len(vt) == 0
 	}
 	return false
+}
+
+// neatList replaces every resource in a Kubernetes List with its uncluttered result of Neat
+func neatList(in string) (string, error) {
+	for i, item := range gjson.Get(in, "items").Array() {
+		neatItem, err := Neat(item.String())
+		if err != nil {
+			return in, fmt.Errorf("error in Neat : %v", err)
+		}
+
+		in, err = sjson.Set(in, fmt.Sprintf("items.%d", i), gjson.Parse(neatItem).Value())
+		if err != nil {
+			return in, fmt.Errorf("error settings neat resource : %v", err)
+		}
+	}
+	return in, nil
 }
