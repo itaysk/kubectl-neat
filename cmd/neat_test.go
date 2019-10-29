@@ -193,6 +193,91 @@ const (
 			]
 		}
 	}`
+	multiVolumesPodData string = `{
+		"apiVersion": "v1",
+		"kind": "Pod",
+		"metadata": {
+			"labels": {
+				"name": "myapp"
+			},
+			"name": "myapp",
+			"namespace": "default"
+		},
+		"spec": {
+			"containers": [
+				{
+					"image": "nginx",
+					"name": "myapp",
+					"volumeMounts": [
+						{
+							"mountPath": "/my",
+							"name": "my",
+							"readOnly": false
+						},
+						{
+							"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+							"name": "default-token-nmshj",
+							"readOnly": true
+						}						
+					]
+				}
+			],
+			"serviceAccount": "default",
+			"serviceAccountName": "default",
+			"volumes": [
+				{
+					"name": "default-token-nmshj",
+					"secret": {
+						"defaultMode": 420,
+						"secretName": "default-token-nmshj"
+					}
+				},
+				{
+					"name": "my",
+					"hostPath": {
+						"path": "/my",
+						"type": "Directory"
+					}
+				}
+			]
+		}
+	}`
+	multiVolumesPodExpect string = `{
+		"apiVersion": "v1",
+		"kind": "Pod",
+		"metadata": {
+			"labels": {
+				"name": "myapp"
+			},
+			"name": "myapp",
+			"namespace": "default"
+		},
+		"spec": {
+			"containers": [
+				{
+					"image": "nginx",
+					"name": "myapp",
+					"volumeMounts": [
+						{
+							"mountPath": "/my",
+							"name": "my",
+							"readOnly": false
+						}						
+					]
+				}
+			],
+			"serviceAccountName": "default",
+			"volumes": [
+				{
+					"name": "my",
+					"hostPath": {
+						"path": "/my",
+						"type": "Directory"
+					}
+				}
+			]
+		}
+	}`
 )
 
 func TestNeatMetadata(t *testing.T) {
@@ -252,92 +337,9 @@ func TestNeatPod(t *testing.T) {
 		expect string
 	}{
 		{
-			title: "pod multi volumes",
-			data: `{
-				"apiVersion": "v1",
-				"kind": "Pod",
-				"metadata": {
-					"labels": {
-						"name": "myapp"
-					},
-					"name": "myapp",
-					"namespace": "default"
-				},
-				"spec": {
-					"containers": [
-						{
-							"image": "nginx",
-							"name": "myapp",
-							"volumeMounts": [
-								{
-									"mountPath": "/my",
-									"name": "my",
-									"readOnly": false
-								},
-								{
-									"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-									"name": "default-token-nmshj",
-									"readOnly": true
-								}						
-							]
-						}
-					],
-					"serviceAccount": "default",
-					"serviceAccountName": "default",
-					"volumes": [
-						{
-							"name": "default-token-nmshj",
-							"secret": {
-								"defaultMode": 420,
-								"secretName": "default-token-nmshj"
-							}
-						},
-						{
-							"name": "my",
-							"hostPath": {
-								"path": "/my",
-								"type": "Directory"
-							}
-						}
-					]
-				}
-			}`,
-			expect: `{
-				"apiVersion": "v1",
-				"kind": "Pod",
-				"metadata": {
-					"labels": {
-						"name": "myapp"
-					},
-					"name": "myapp",
-					"namespace": "default"
-				},
-				"spec": {
-					"containers": [
-						{
-							"image": "nginx",
-							"name": "myapp",
-							"volumeMounts": [
-								{
-									"mountPath": "/my",
-									"name": "my",
-									"readOnly": false
-								}						
-							]
-						}
-					],
-					"serviceAccountName": "default",
-					"volumes": [
-						{
-							"name": "my",
-							"hostPath": {
-								"path": "/my",
-								"type": "Directory"
-							}
-						}
-					]
-				}
-			}`,
+			title:  "pod multi volumes",
+			data:   multiVolumesPodData,
+			expect: multiVolumesPodExpect,
 		},
 	}
 	for _, c := range cases {
@@ -365,8 +367,8 @@ func TestNeat(t *testing.T) {
 		expect string
 	}{
 		{
-			title: "pod 1",
-			data: podData,
+			title:  "pod 1",
+			data:   podData,
 			expect: podExpect,
 		},
 		{
@@ -466,21 +468,14 @@ func TestNeatList(t *testing.T) {
 		expect string
 	}{
 		{
-			title: "list pod 1",
-			data: fmt.Sprintf(`{
-				"apiVersion": "v1",
-				"kind": "List",
-				"items": [
-					%s
-				]
-			}`, podData),
-			expect: fmt.Sprintf(`{
-				"apiVersion": "v1",
-				"kind": "List",
-				"items": [
-					%s
-				]
-			}`, podExpect),
+			title:  "list pod 1",
+			data:   fmt.Sprintf(`{ "items": [ %s ] }`, podData),
+			expect: fmt.Sprintf(`{ "items": [ %s ] }`, podExpect),
+		},
+		{
+			title:  "two pods list",
+			data:   fmt.Sprintf(`{ "items": [ %s, %s ] }`, podData, multiVolumesPodData),
+			expect: fmt.Sprintf(`{ "items": [ %s, %s ] }`, podExpect, multiVolumesPodExpect),
 		},
 	}
 	for _, c := range cases {
