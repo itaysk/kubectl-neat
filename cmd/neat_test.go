@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/itaysk/kubectl-neat/pkg/testutil"
@@ -367,7 +368,23 @@ func TestNeat(t *testing.T) {
 			title: "pod 1",
 			data: podData,
 			expect: podExpect,
-						},
+		},
+		{
+			title: "empty list",
+			data: `{
+				"apiVersion": "v1",
+				"items": [],
+				"kind": "List",
+				"metadata": {
+					"resourceVersion": "",
+					"selfLink": ""
+				}
+			}`,
+			expect: `{
+				"apiVersion": "v1",
+				"kind": "List"
+			}`,
+		},
 	}
 	for _, c := range cases {
 		resJSON, err := Neat(c.data)
@@ -439,5 +456,46 @@ func TestNeatEmpty(t *testing.T) {
 			t.Errorf("test case '%s' failed. want: '%s' have: '%s'", c.title, c.expect, resJSON)
 		}
 
+	}
+}
+
+func TestNeatList(t *testing.T) {
+	cases := []struct {
+		title  string
+		data   string
+		expect string
+	}{
+		{
+			title: "list pod 1",
+			data: fmt.Sprintf(`{
+				"apiVersion": "v1",
+				"kind": "List",
+				"items": [
+					%s
+				]
+			}`, podData),
+			expect: fmt.Sprintf(`{
+				"apiVersion": "v1",
+				"kind": "List",
+				"items": [
+					%s
+				]
+			}`, podExpect),
+		},
+	}
+	for _, c := range cases {
+		resJSON, err := neatList(c.data)
+		if err != nil {
+			t.Errorf("error in NeatList for case '%s': %v", c.title, err)
+			continue
+		}
+		equal, err := testutil.JSONEqual(resJSON, c.expect)
+		if err != nil {
+			t.Errorf("error in JSONEqual for case '%s': %v", c.title, err)
+			continue
+		}
+		if !equal {
+			t.Errorf("test case '%s' failed. want: '%s' have: '%s'", c.title, c.expect, resJSON)
+		}
 	}
 }
