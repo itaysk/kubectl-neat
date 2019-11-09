@@ -70,9 +70,14 @@ func Neat(in string) (string, error) {
 }
 
 func neatMetadata(in string) (string, error) {
+	var err error
+	in, err = sjson.Delete(in, `metadata.annotations.kubectl\.kubernetes\.io/last-applied-configuration`)
+	if err != nil {
+		return in, fmt.Errorf("error deleting last-applied-configuration : %v", err)
+	}
 	// TODO: prettify this. gjson's @pretty is ok but setRaw the pretty code gives unwanted result
 	newMeta := gjson.Get(in, "{metadata.name,metadata.namespace,metadata.labels,metadata.annotations}")
-	in, err := sjson.Set(in, "metadata", newMeta.Value())
+	in, err = sjson.Set(in, "metadata", newMeta.Value())
 	if err != nil {
 		return in, fmt.Errorf("error setting new metadata : %v", err)
 	}
