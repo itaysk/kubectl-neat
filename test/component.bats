@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]') 
-exe="dist/$runtime_os/kubectl-neat"
+exe="./kubectl-neat_${runtime_os}"
 
 @test "pod - json" {
     KUBECTL_OUTPUT=json run "$exe" <./test/fixtures/pod-1-raw.json

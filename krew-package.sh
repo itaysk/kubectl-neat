@@ -1,16 +1,16 @@
 #! /bin/bash
 # This script makes a platform specific krew package
+# it assumes goreleaser had already run and created the archives and the checksums
 # Arguments:
 #   1. target os (`linux`/`darwin`)
 #   2. plugin name (rename the plugin in tests to avoid conflicts with existing installation)
-#   3. directory where to create artifacts
+#   3. path to goreleaser dist directory
 
 os="$1"
 plugin="$2"
 dir="$3"
 
-tar -czf "$dir/kubectl-neat_$os.tar.gz" "dist/$os"
-sha256=$(sha256sum "$dir/kubectl-neat_$os.tar.gz" | awk '{print $1}')
+sha256=$(grep "$os" "$dir/checksums.txt" | cut -f1 -d ' ')
 tmp="$dir/kubectl-${plugin}_${os}.json"
 yq r --tojson krew-template.yaml >"$tmp"
 jq 'delpaths([path(.spec.platforms[] | select( .selector.matchLabels.os != $os ))])' --arg os "$os" "$tmp" | sponge "$tmp"

@@ -1,26 +1,20 @@
 
-.PHONY: test test-unit test-component test-kubectl test-install build dist clean
+.PHONY: test test-unit test-component test-kubectl test-install build release clean
+os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
 test: test-unit test-component test-kubectl test-install
 
 test-unit:
 	go test ./...
 
-test-component: dist
+test-component: kubectl-neat_$(os)
 	bats ./test/component.bats
 
-test-kubectl: dist
+test-kubectl: kubectl-neat_$(os)
 	bats ./test/kubectl.bats
 
-test-install: dist
+test-install: dist/kubectl-neat_$(os).tar.gz dist/checksums.txt
 	bats ./test/install.bats
-
-os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
-dist: dist/$(os)
-
-dist/%: kubectl-neat_%
-	mkdir -p dist/$*
-	cp kubectl-neat_$* dist/$*/kubectl-neat
 
 build: kubectl-neat_$(os)
 
@@ -28,19 +22,30 @@ SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 kubectl-neat_%: $(SRC)
 	GOOS=$* go build -o $(@F)
 
-clean:
-	rm -rf ./dist ./krew
-	rm kubectl-neat*
+# release by default will not publish. run with `publish=1` to publish
+goreleaserflags = --skip-publish --snapshot
+ifdef publish
+	goreleaserflags =
+endif
+# relase always re-builds (no dependencies on purpose)
+release:
+	goreleaser --rm-dist $(goreleaserflags) 
 
-krew: dist/darwin dist/linux
-	mkdir -p ./krew
-	./krew-package.sh 'darwin' 'neat' 'krew'
-	./krew-package.sh 'linux' 'neat' 'krew'
+dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt: release
+	# no op recipe
+	@:
 
+krew: dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt
+	./krew-package.sh 'darwin' 'neat' './dist'
+	./krew-package.sh 'linux' 'neat' './dist'
 	# merge
-	yq r --tojson "krew/kubectl-neat_darwin.yaml" > krew/darwin.json
-	yq r --tojson "krew/kubectl-neat_linux.yaml" > krew/linux.json
-	rm krew/kubectl-neat_darwin.yaml krew/kubectl-neat_linux.yaml
-	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'krew/darwin.json' 'krew/linux.json' > 'krew/kubectl-neat.json'
-	yq r krew/kubectl-neat.json > krew/kubectl-neat.yaml
-	rm krew/kubectl-neat.json krew/darwin.json krew/linux.json
+	yq r --tojson "dist/kubectl-neat_darwin.yaml" > dist/darwin.json
+	yq r --tojson "dist/kubectl-neat_linux.yaml" > dist/linux.json
+	rm dist/kubectl-neat_darwin.yaml dist/kubectl-neat_linux.yaml
+	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/darwin.json' 'dist/linux.json' > 'dist/kubectl-neat.json'
+	yq r dist/kubectl-neat.json > dist/kubectl-neat.yaml
+	rm dist/kubectl-neat.json dist/darwin.json dist/linux.json
+
+clean:
+	rm -rf dist
+	rm kubectl-neat*

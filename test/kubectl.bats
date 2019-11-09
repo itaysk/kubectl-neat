@@ -6,7 +6,7 @@ function setup() {
     # rename the plugin to avoid conflicts with existing installation
     plugin_name="neat2"
     plugin="$tmpdir"/kubectl-"$plugin_name"
-    ln -s "$(pwd)/dist/$runtime_os/kubectl-neat" "$plugin"
+    ln -s "$(pwd)/kubectl-neat_${runtime_os}" "$plugin"
     # PATH modification here has no external affect since bats runs in a subshell
     PATH="$PATH":"$tmpdir"
     kubectl delete -f ./test/fixtures/pod-1-neat.json 2>/dev/null || true

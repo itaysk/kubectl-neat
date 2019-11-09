@@ -1,0 +1,20 @@
+builds:
+- main: ./main.go
+  env:
+  - CGO_ENABLED=0
+  goos:
+    - darwin
+    - linux
+  goarch:
+    - amd64
+archives:
+- name_template: "{{ .ProjectName }}_{{ .Os }}"
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'

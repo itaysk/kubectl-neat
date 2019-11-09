@@ -21,7 +21,7 @@ spec:
       uri: https://github.com/itaysk/kubectl-neat/releases/download/v1.0.0/kubectl-neat_darwin.tar.gz
       sha256: ${sha256}
       files:
-        - from: "/dist/darwin/*"
+        - from: "/*"
           to: "."
       bin: "./kubectl-neat"
     - selector:
@@ -31,6 +31,6 @@ spec:
       uri: https://github.com/itaysk/kubectl-neat/releases/download/v1.0.0/kubectl-neat_linux.tar.gz
       sha256: ${sha256}
       files:
-        - from: "/dist/linux/*"
+        - from: "/*"
           to: "."
       bin: "./kubectl-neat"
