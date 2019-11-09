@@ -52,6 +52,28 @@ func TestNeatMetadata(t *testing.T) {
 				}
 			}`,
 		},
+		{
+			title: "annotations with apply",
+			data: `{
+				"metadata": {
+					"name": "test",
+					"namespace": "testns",
+					"annotations": {
+						"my-annotation": "is here",
+						"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"authentication.istio.io/v1alpha1\",\"kind\":\"Policy\",\"metadata\":{\"annotations\":{},\"name\":\"default\",\"namespace\":\"one\"},\"spec\":{\"peers\":[{\"mtls\":{}}]}}\n"
+					}
+				}
+			}`,
+			expect: `{
+				"metadata": {
+					"name": "test",
+					"namespace": "testns",
+					"annotations": {
+						"my-annotation": "is here"
+					}
+				}
+			}`,
+		},
 	}
 	for _, c := range cases {
 		resJSON, err := neatMetadata(c.data)
