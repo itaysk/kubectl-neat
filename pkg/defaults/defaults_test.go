@@ -235,13 +235,11 @@ func TestIsDefault(t *testing.T) {
 func TestNeatDefault(t *testing.T) {
 	cases := []struct {
 		title  string
-		path   string
 		data   string
 		expect string
 	}{
 		{
 			title: "PullPolicyAlways",
-			path:  "spec.containers.0.imagePullPolicy",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -278,7 +276,6 @@ func TestNeatDefault(t *testing.T) {
 		},
 		{
 			title: "PullPolicyIfNotPresent",
-			path:  "spec.containers.0.imagePullPolicy",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -315,7 +312,6 @@ func TestNeatDefault(t *testing.T) {
 		},
 		{
 			title: "RestartPolicy",
-			path:  "spec.restartPolicy",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -352,7 +348,6 @@ func TestNeatDefault(t *testing.T) {
 		},
 		{
 			title: "TerminationMessagePath",
-			path:  "spec.containers.0.terminationMessagePath",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -389,7 +384,6 @@ func TestNeatDefault(t *testing.T) {
 		},
 		{
 			title: "CRD",
-			path:  "",
 			data: `{
 				"apiVersion": "networking.istio.io/v1alpha3",
 				"kind": "DestinationRule",
