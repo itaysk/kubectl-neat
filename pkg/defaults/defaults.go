@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
 	apisv1 "k8s.io/kubernetes/pkg/apis/core/v1"
@@ -17,6 +18,16 @@ import (
 // default values is determined by invoking the "defaulting" code from Kubernetes apimachinery
 func NeatDefaults(in string) (string, error) {
 	var err error
+
+	var pom metav1.PartialObjectMetadata
+	err = json.Unmarshal([]byte(in), &pom)
+	if err != nil {
+		return "", fmt.Errorf("error unmarshaling as PartialObject : %v", err)
+	}
+	if !myscheme.Recognizes(pom.GroupVersionKind()) {
+		return in, nil
+	}
+
 	specJSON := gjson.Get(in, "spec").String()
 	pathsToDelete, err := flatMapJSON(specJSON, "spec.")
 	if err != nil {
@@ -62,7 +73,7 @@ var decoder runtime.Decoder
 
 func init() {
 	myscheme = runtime.NewScheme()
-	apisv1.RegisterDefaults(myscheme)
+	apisv1.AddToScheme(myscheme)
 	decoder = scheme.Codecs.UniversalDeserializer()
 }
 

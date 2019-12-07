@@ -235,13 +235,11 @@ func TestIsDefault(t *testing.T) {
 func TestNeatDefault(t *testing.T) {
 	cases := []struct {
 		title  string
-		path   string
 		data   string
 		expect string
 	}{
 		{
 			title: "PullPolicyAlways",
-			path:  "spec.containers.0.imagePullPolicy",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -278,7 +276,6 @@ func TestNeatDefault(t *testing.T) {
 		},
 		{
 			title: "PullPolicyIfNotPresent",
-			path:  "spec.containers.0.imagePullPolicy",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -315,7 +312,6 @@ func TestNeatDefault(t *testing.T) {
 		},
 		{
 			title: "RestartPolicy",
-			path:  "spec.restartPolicy",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -352,7 +348,6 @@ func TestNeatDefault(t *testing.T) {
 		},
 		{
 			title: "TerminationMessagePath",
-			path:  "spec.containers.0.terminationMessagePath",
 			data: `{
 				"apiVersion": "v1",
 				"kind": "Pod",
@@ -384,6 +379,57 @@ func TestNeatDefault(t *testing.T) {
 							"name": "myapp"
 						}
 					]
+				}
+			}`,
+		},
+		{
+			title: "CRD",
+			data: `{
+				"apiVersion": "networking.istio.io/v1alpha3",
+				"kind": "DestinationRule",
+				"metadata": {
+					"annotations": {
+						"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"DestinationRule\",\"metadata\":{\"annotations\":{},\"name\":\"default\",\"namespace\":\"one\"},\"spec\":{\"host\":\"*.one.svc.cluster.local\",\"trafficPolicy\":{\"tls\":{\"mode\":\"ISTIO_MUTUAL\"}}}}\n"
+					},
+					"creationTimestamp": "2019-11-06T20:14:07Z",
+					"generation": 1,
+					"name": "default",
+					"namespace": "one",
+					"resourceVersion": "314732",
+					"selfLink": "/apis/networking.istio.io/v1alpha3/namespaces/one/destinationrules/default",
+					"uid": "fca04858-00d1-11ea-84b3-025000000001"
+				},
+				"spec": {
+					"host": "*.one.svc.cluster.local",
+					"trafficPolicy": {
+						"tls": {
+							"mode": "ISTIO_MUTUAL"
+						}
+					}
+				}
+			}`,
+			expect: `{
+				"apiVersion": "networking.istio.io/v1alpha3",
+				"kind": "DestinationRule",
+				"metadata": {
+					"annotations": {
+						"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"DestinationRule\",\"metadata\":{\"annotations\":{},\"name\":\"default\",\"namespace\":\"one\"},\"spec\":{\"host\":\"*.one.svc.cluster.local\",\"trafficPolicy\":{\"tls\":{\"mode\":\"ISTIO_MUTUAL\"}}}}\n"
+					},
+					"creationTimestamp": "2019-11-06T20:14:07Z",
+					"generation": 1,
+					"name": "default",
+					"namespace": "one",
+					"resourceVersion": "314732",
+					"selfLink": "/apis/networking.istio.io/v1alpha3/namespaces/one/destinationrules/default",
+					"uid": "fca04858-00d1-11ea-84b3-025000000001"
+				},
+				"spec": {
+					"host": "*.one.svc.cluster.local",
+					"trafficPolicy": {
+						"tls": {
+							"mode": "ISTIO_MUTUAL"
+						}
+					}
 				}
 			}`,
 		},
