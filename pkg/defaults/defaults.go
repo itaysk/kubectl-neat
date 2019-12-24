@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
-	apisv1 "k8s.io/api/core/v1"
+	apisv1 "k8s.io/kubernetes/pkg/apis/core/v1"
 )
 
 // NeatDefaults gets a json document representing a Kubernetes resource, and removes all fields with default values.
