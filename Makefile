@@ -43,7 +43,7 @@ krew: dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checks
 	yq r --tojson "dist/kubectl-neat_linux.yaml" > dist/linux.json
 	rm dist/kubectl-neat_darwin.yaml dist/kubectl-neat_linux.yaml
 	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/darwin.json' 'dist/linux.json' > 'dist/kubectl-neat.json'
-	yq r dist/kubectl-neat.json > dist/kubectl-neat.yaml
+	yq r  --prettyPrint dist/kubectl-neat.json > dist/kubectl-neat.yaml
 	rm dist/kubectl-neat.json dist/darwin.json dist/linux.json
 
 clean:
