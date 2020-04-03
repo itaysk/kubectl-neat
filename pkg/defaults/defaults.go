@@ -28,8 +28,11 @@ func NeatDefaults(in string) (string, error) {
 		return in, nil
 	}
 
-	specJSON := gjson.Get(in, "spec").String()
-	pathsToDelete, err := flatMapJSON(specJSON, "spec.")
+	specJSON := gjson.Get(in, "spec")
+	if !specJSON.Exists() {
+		return in, nil
+	}
+	pathsToDelete, err := flatMapJSON(specJSON.String(), "spec.")
 	if err != nil {
 		return "", fmt.Errorf("error flattening json : %v", err)
 	}
