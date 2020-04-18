@@ -52,3 +52,32 @@ kubectl neat svc myservice --output json
 ```
 
 Any valid option that `kubectl get` accepts should be usable.
+
+# How it works
+
+Besides general tidying for status, metadata, and empty fields, kubectl-neat primarily looks for two types of things: default values inserted by Kubernetes' object model, and common mutating controllers.
+
+## Kubernetes object model defaults
+
+For de-defaulting Kubernetes' object model, we invoke the same code that Kubernetes would have, and see what default values were assigned. If these observed values look like the ones we have in the incoming spec, we conclude they are default. If they weren't, and the user manually set a field to it's default value, it's not a bad thing to remove it anyway.
+
+## Common mutating controllers
+
+Here are the [recommended](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#what-does-each-admission-controller-do) admission controllers, and their relation to kubectl-neat:
+
+controller | description | neat
+---|---|---
+NamespaceLifecycle | rejects operations on resources in namespaces being deleted | ignore
+LimitRanger | set default values for resource requests and limits | ignore
+ServiceAccount | set default service account and assign token | Remove `default-token-*` volumes. Remove deprecated `spec.serviceAccount`
+TaintNodesByCondition | automatically taint a node based on node conditions | TODO
+Priority | validate priority class and add it's value | ignore
+DefaultTolerationSeconds | configure pods to temporarily tolarate notready and unreachable taints | TODO
+DefaultStorageClass | validate and set default storage class for new pvc | ignore
+StorageObjectInUseProtection | prevent deletion of pvc/pv in use by adding a finalizer | ignore
+PersistentVolumeClaimResize | enforce pvc resizing only for enabled storage classes | ignore
+MutatingAdmissionWebhook | implement the mutating webhook feature | ignore
+ValidatingAdmissionWebhook | implement the validating webhook feature | ignore
+RuntimeClass | add pod overhead according to runtime class | TODO
+ResourceQuota | implement the resource qouta feature | ignore
+Kubernetes Scheduler | assign pods to nodes | Remove `spec.nodeName`
