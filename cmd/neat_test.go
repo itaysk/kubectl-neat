@@ -93,7 +93,70 @@ func TestNeatMetadata(t *testing.T) {
 	}
 }
 
-func TestNeatPod(t *testing.T) {
+func TestNeatScheduler(t *testing.T) {
+	cases := []struct {
+		title  string
+		data   string
+		expect string
+	}{
+		{
+			title: "nodeName",
+			data: `{
+				"apiVersion": "v1",
+				"kind": "Pod",
+				"metadata": {
+					"name": "myapp",
+					"namespace": "default"
+				},
+				"spec": {
+					"containers": [
+						{
+							"image": "nginx",
+							"imagePullPolicy": "Always",
+							"name": "myapp"
+						}
+					],
+					"nodeName": "minikube"
+				}
+			}`,
+			expect: `{
+				"apiVersion": "v1",
+				"kind": "Pod",
+				"metadata": {
+					"name": "myapp",
+					"namespace": "default"
+				},
+				"spec": {
+					"containers": [
+						{
+							"image": "nginx",
+							"imagePullPolicy": "Always",
+							"name": "myapp"
+						}
+					]
+				}
+			}`,
+		},
+	}
+	for _, c := range cases {
+		resJSON, err := neatScheduler(c.data)
+		if err != nil {
+			t.Errorf("error in neatScheduler for case '%s': %v", c.title, err)
+			continue
+		}
+		equal, err := testutil.JSONEqual(resJSON, c.expect)
+		if err != nil {
+			t.Errorf("error in JSONEqual for case '%s': %v", c.title, err)
+			continue
+		}
+		if !equal {
+			t.Errorf("test case '%s' failed. want: '%s' have: '%s'", c.title, c.expect, resJSON)
+		}
+
+	}
+}
+
+func TestNeatServiceAccount(t *testing.T) {
 	cases := []struct {
 		title  string
 		data   string
@@ -189,9 +252,9 @@ func TestNeatPod(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		resJSON, err := neatPod(c.data)
+		resJSON, err := neatServiceAccount(c.data)
 		if err != nil {
-			t.Errorf("error in neatPod for case '%s': %v", c.title, err)
+			t.Errorf("error in neatServiceAccount for case '%s': %v", c.title, err)
 			continue
 		}
 		equal, err := testutil.JSONEqual(resJSON, c.expect)

@@ -37,19 +37,23 @@ func Neat(in string) (string, error) {
 		return draft, fmt.Errorf("error in neatPod, input is not a vaild json: %s", in[:20])
 	}
 
-	// kind specific neating
-	kind := gjson.Get(in, "kind").String()
-	if kind == "Pod" {
-		draft, err = neatPod(draft)
-		if err != nil {
-			return draft, fmt.Errorf("error in neatPod : %v", err)
-		}
-	}
-
 	// defaults neating
 	draft, err = defaults.NeatDefaults(draft)
 	if err != nil {
 		return draft, fmt.Errorf("error in neatDefaults : %v", err)
+	}
+
+	kind := gjson.Get(in, "kind").String()
+	// controllers neating
+	draft, err = neatScheduler(draft)
+	if err != nil {
+		return draft, fmt.Errorf("error in neatScheduler : %v", err)
+	}
+	if kind == "Pod" {
+		draft, err = neatServiceAccount(draft)
+		if err != nil {
+			return draft, fmt.Errorf("error in neatServiceAccount : %v", err)
+		}
 	}
 
 	// general neating
@@ -88,13 +92,17 @@ func neatStatus(in string) (string, error) {
 	return sjson.Delete(in, "status")
 }
 
-func neatPod(in string) (string, error) {
+func neatScheduler(in string) (string, error) {
+	return sjson.Delete(in, "spec.nodeName")
+}
+
+func neatServiceAccount(in string) (string, error) {
+	var err error
 	// keep an eye open on https://github.com/tidwall/sjson/issues/11
 	// when it's implemented, we can do:
 	// sjson.delete(in, "spec.volumes.#(name%default-token-*)")
 	// sjson.delete(in, "spec.containers.#.volumeMounts.#(name%default-token-*)")
 
-	var err error
 	for vi, v := range gjson.Get(in, "spec.volumes").Array() {
 		vname := v.Get("name").String()
 		if strings.HasPrefix(vname, "default-token-") {
@@ -115,11 +123,8 @@ func neatPod(in string) (string, error) {
 			}
 		}
 	}
-	in, err = sjson.Delete(in, "spec.nodeName")
-	in, err = sjson.Delete(in, "spec.serviceAccount") //Deprecated: Use serviceAccountName instead
-	if err != nil {
-		//
-	}
+	in, _ = sjson.Delete(in, "spec.serviceAccount") //Deprecated: Use serviceAccountName instead
+
 	return in, nil
 }
 
