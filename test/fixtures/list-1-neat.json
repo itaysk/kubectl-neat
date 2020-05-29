@@ -1,0 +1,80 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "labels": {
+                    "run": "t1"
+                },
+                "name": "t1",
+                "namespace": "default"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "itaysk/cyan",
+                        "name": "t1"
+                    }
+                ],
+                "priority": 0,
+                "serviceAccountName": "default",
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "metadata": {
+                "labels": {
+                    "run": "t2"
+                },
+                "name": "t2",
+                "namespace": "default"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "itaysk/cyan",
+                        "name": "t2"
+                    }
+                ],
+                "priority": 0,
+                "serviceAccountName": "default",
+                "tolerations": [
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/not-ready",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    },
+                    {
+                        "effect": "NoExecute",
+                        "key": "node.kubernetes.io/unreachable",
+                        "operator": "Exists",
+                        "tolerationSeconds": 300
+                    }
+                ]
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}
