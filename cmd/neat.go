@@ -37,13 +37,30 @@ func Neat(in string) (string, error) {
 		return draft, fmt.Errorf("error in neatPod, input is not a vaild json: %s", in[:20])
 	}
 
+	kind := gjson.Get(in, "kind").String()
+
+	// handle list
+	if kind == "List" {
+		items := gjson.Get(draft, "items").Array()
+		for i, item := range items {
+			itemNeat, err := Neat(item.String())
+			if err != nil {
+				continue
+			}
+			draft, err = sjson.SetRaw(draft, fmt.Sprintf("items.%d", i), itemNeat)
+			if err != nil {
+				continue
+			}
+		}
+		return draft, nil
+	}
+
 	// defaults neating
 	draft, err = defaults.NeatDefaults(draft)
 	if err != nil {
 		return draft, fmt.Errorf("error in neatDefaults : %v", err)
 	}
 
-	kind := gjson.Get(in, "kind").String()
 	// controllers neating
 	draft, err = neatScheduler(draft)
 	if err != nil {

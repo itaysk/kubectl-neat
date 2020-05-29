@@ -1,0 +1,174 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2020-05-29T15:59:24Z"
+    labels:
+      run: t1
+    name: t1
+    namespace: default
+    resourceVersion: "564"
+    selfLink: /api/v1/namespaces/default/pods/t1
+    uid: 2fd916b3-3df3-41ff-87b7-0213c60210cd
+  spec:
+    containers:
+    - image: itaysk/cyan
+      imagePullPolicy: Always
+      name: t1
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-m7wjs
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: 116-control-plane
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-m7wjs
+      secret:
+        defaultMode: 420
+        secretName: default-token-m7wjs
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:24Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:32Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:32Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:24Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://8b896cbabfdac1004b2432632dcc9f56e0bab67fbd9512bf1cc26db5847a55fc
+      image: docker.io/itaysk/cyan:latest
+      imageID: docker.io/itaysk/cyan@sha256:0fcfc9231fa11b473973a68c0394e7c85e2117a9ba7a9476897c07e40d718ffa
+      lastState: {}
+      name: t1
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2020-05-29T15:59:31Z"
+    hostIP: 172.18.0.2
+    phase: Running
+    podIP: 10.244.0.5
+    podIPs:
+    - ip: 10.244.0.5
+    qosClass: BestEffort
+    startTime: "2020-05-29T15:59:24Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2020-05-29T15:59:37Z"
+    labels:
+      run: t2
+    name: t2
+    namespace: default
+    resourceVersion: "600"
+    selfLink: /api/v1/namespaces/default/pods/t2
+    uid: 375f3cc4-6bb4-4880-b3f3-0d3c43eef30c
+  spec:
+    containers:
+    - image: itaysk/cyan
+      imagePullPolicy: Always
+      name: t2
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-m7wjs
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: 116-control-plane
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-m7wjs
+      secret:
+        defaultMode: 420
+        secretName: default-token-m7wjs
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:37Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:40Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:40Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2020-05-29T15:59:37Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://5e3db942e312548c103c334ce3ba00751360c07049971c8a00d2044ab055129b
+      image: docker.io/itaysk/cyan:latest
+      imageID: docker.io/itaysk/cyan@sha256:0fcfc9231fa11b473973a68c0394e7c85e2117a9ba7a9476897c07e40d718ffa
+      lastState: {}
+      name: t2
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2020-05-29T15:59:39Z"
+    hostIP: 172.18.0.2
+    phase: Running
+    podIP: 10.244.0.7
+    podIPs:
+    - ip: 10.244.0.7
+    qosClass: BestEffort
+    startTime: "2020-05-29T15:59:37Z"
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
