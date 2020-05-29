@@ -1,5 +1,11 @@
 
-.PHONY: test test-unit test-component test-kubectl test-install build release clean
+# TL;DR:
+# make build: build locally
+# make test: test all
+# make test-X: test X
+# make release: after git tag, release to github and prepare krew file
+
+.PHONY: test test-unit test-component test-kubectl test-install build goreleaser release clean
 os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
 test: test-unit test-component test-kubectl test-install
@@ -28,14 +34,15 @@ ifdef publish
 	goreleaserflags =
 endif
 # relase always re-builds (no dependencies on purpose)
-release:
+goreleaser:
 	goreleaser --rm-dist $(goreleaserflags) 
 
-dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt: release
+dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt: goreleaser
 	# no op recipe
 	@:
 
-krew: dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt
+release: publish = 1
+release: dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt
 	./krew-package.sh 'darwin' 'neat' './dist'
 	./krew-package.sh 'linux' 'neat' './dist'
 	# merge
