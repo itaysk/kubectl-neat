@@ -32,26 +32,36 @@ When used as a kubectl plugin the command is `kubectl neat`, and when used as a 
 
 ## Usage
 
-You can pipe `kubectl get -o yaml/json` output to it:
+There are two modes of operation that specify where to get the input document from: a local file or from  Kubernetes.
 
+### Local - file or Stdin
+
+This is the default mode if you run just `kubectl neat`. This command accepts an optional flag `-f/--file` which specifies the file to neat. It can be a path to a local file, or `-` to read the file from stdin. If omitted, it will default to `-`. The file must be a yaml or json file and a valid Kubernetes resource.
+
+There's another optional optional flag, `-o/--output` which specifies the format for the output. If omitted it will default to the same format of the input (auto-detected).
+
+Examples:
 ```bash
 kubectl get pod mypod -o yaml | kubectl neat
+
+kubectl get pod mypod -oyaml | kubectl neat -o json
+
+kubectl neat -f - <./my-pod.json
+
+kubectl neat -f ./my-pod.json
+
+kubectl neat -f ./my-pod.json --output yaml
 ```
 
-or any other yaml/json as long as it's a valid Kubernetes resource
+### Kubernetes - kubectl get wrapper
 
+This mode is invoked by calling the `get` subcommand, i.e `kubectl neat get ...`. It is a convenience to run `kubectl get` and then `kubectl neat` the output in a single command. It accepts any argument that `kubectl get` accepts and passes those arguments as is to `kubectl get`. Since it executes `kubectl`, it need to be able to find it in the path.
+
+Examples:
 ```bash
-kubectl neat <./my-pod.json
+kubectl neat get pod mypod -oyaml
+kubectl neat get svc -n default myservice --output json
 ```
-
-or just replace any `kubectl get` command with `kubectl neat`. For example:
-
-```bash
-kubectl neat pod mypod -oyaml
-kubectl neat svc myservice --output json
-```
-
-Any valid option that `kubectl get` accepts should be usable.
 
 # How it works
 
