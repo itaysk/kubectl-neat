@@ -16,6 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"io/ioutil"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/itaysk/kubectl-neat/pkg/testutil"
@@ -269,204 +272,6 @@ func TestNeatServiceAccount(t *testing.T) {
 	}
 }
 
-func TestNeat(t *testing.T) {
-	cases := []struct {
-		title  string
-		data   string
-		expect string
-	}{
-		{
-			title: "pod 1",
-			data: `{
-				"apiVersion": "v1",
-				"kind": "Pod",
-				"metadata": {
-					"creationTimestamp": "2019-04-24T19:55:27Z",
-					"labels": {
-						"app": "myapp"
-					},
-					"name": "myapp",
-					"namespace": "default",
-					"resourceVersion": "274103",
-					"selfLink": "/api/v1/namespaces/default/pods/myapp",
-					"uid": "e8330f3c-66ca-11e9-b6fa-0800271788ca"
-				},
-				"spec": {
-					"containers": [
-						{
-							"image": "nginx",
-							"imagePullPolicy": "Always",
-							"name": "myapp",
-							"ports": [
-								{
-									"containerPort": 1234,
-									"protocol": "TCP"
-								}
-							],
-							"resources": {},
-							"terminationMessagePath": "/dev/termination-log",
-							"terminationMessagePolicy": "File",
-							"volumeMounts": [
-								{
-									"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-									"name": "default-token-nmshj",
-									"readOnly": true
-								}
-							]
-						}
-					],
-					"dnsPolicy": "ClusterFirst",
-					"enableServiceLinks": true,
-					"nodeName": "minikube",
-					"priority": 0,
-					"restartPolicy": "Always",
-					"schedulerName": "default-scheduler",
-					"securityContext": {},
-					"serviceAccount": "default",
-					"serviceAccountName": "default",
-					"terminationGracePeriodSeconds": 30,
-					"tolerations": [
-						{
-							"effect": "NoExecute",
-							"key": "node.kubernetes.io/not-ready",
-							"operator": "Exists",
-							"tolerationSeconds": 300
-						},
-						{
-							"effect": "NoExecute",
-							"key": "node.kubernetes.io/unreachable",
-							"operator": "Exists",
-							"tolerationSeconds": 300
-						}
-					],
-					"volumes": [
-						{
-							"name": "default-token-nmshj",
-							"secret": {
-								"defaultMode": 420,
-								"secretName": "default-token-nmshj"
-							}
-						}
-					]
-				},
-				"status": {
-					"conditions": [
-						{
-							"lastProbeTime": null,
-							"lastTransitionTime": "2019-04-24T19:55:27Z",
-							"status": "True",
-							"type": "Initialized"
-						},
-						{
-							"lastProbeTime": null,
-							"lastTransitionTime": "2019-07-06T18:41:25Z",
-							"status": "True",
-							"type": "Ready"
-						},
-						{
-							"lastProbeTime": null,
-							"lastTransitionTime": "2019-07-06T18:41:25Z",
-							"status": "True",
-							"type": "ContainersReady"
-						},
-						{
-							"lastProbeTime": null,
-							"lastTransitionTime": "2019-04-24T19:55:27Z",
-							"status": "True",
-							"type": "PodScheduled"
-						}
-					],
-					"containerStatuses": [
-						{
-							"containerID": "docker://92d7dc7a851453c2f1e75c4af42a9e72fea50127fede62dfbd5fbb6fb0481fcc",
-							"image": "nginx:latest",
-							"imageID": "docker-pullable://nginx@sha256:96fb261b66270b900ea5a2c17a26abbfabe95506e73c3a3c65869a6dbe83223a",
-							"lastState": {
-								"terminated": {
-									"containerID": "docker://288fc0a2b98708d6a4661f59c54c4ae366c1acea642f000ba9615932dbff411f",
-									"exitCode": 0,
-									"finishedAt": "2019-07-04T08:17:20Z",
-									"reason": "Completed",
-									"startedAt": "2019-07-03T05:55:39Z"
-								}
-							},
-							"name": "myapp",
-							"ready": true,
-							"restartCount": 3,
-							"state": {
-								"running": {
-									"startedAt": "2019-07-06T18:41:25Z"
-								}
-							}
-						}
-					],
-					"hostIP": "10.0.2.15",
-					"phase": "Running",
-					"podIP": "172.17.0.2",
-					"qosClass": "BestEffort",
-					"startTime": "2019-04-24T19:55:27Z"
-				}
-			}`,
-			expect: `{
-				"apiVersion": "v1",
-				"kind": "Pod",
-				"metadata": {
-					"labels": {
-						"app": "myapp"
-					},
-					"namespace": "default",
-					"name": "myapp"
-				},
-				"spec": {
-					"containers": [
-						{
-							"image": "nginx",
-							"name": "myapp",
-							"ports": [
-								{
-									"containerPort": 1234
-								}
-							]
-						}
-					],
-					"priority": 0,
-					"serviceAccountName": "default",
-					"tolerations": [
-						{
-							"effect": "NoExecute",
-							"key": "node.kubernetes.io/not-ready",
-							"operator": "Exists",
-							"tolerationSeconds": 300
-						},
-						{
-							"effect": "NoExecute",
-							"key": "node.kubernetes.io/unreachable",
-							"operator": "Exists",
-							"tolerationSeconds": 300
-						}
-					]
-				}
-			}`,
-		},
-	}
-	for _, c := range cases {
-		resJSON, err := Neat(c.data)
-		if err != nil {
-			t.Errorf("error in Neat for case '%s': %v", c.title, err)
-			continue
-		}
-		equal, err := testutil.JSONEqual(resJSON, c.expect)
-		if err != nil {
-			t.Errorf("error in JSONEqual for case '%s': %v", c.title, err)
-			continue
-		}
-		if !equal {
-			t.Errorf("test case '%s' failed. want: '%s' have: '%s'", c.title, c.expect, resJSON)
-		}
-
-	}
-}
-
 func TestNeatEmpty(t *testing.T) {
 	cases := []struct {
 		title  string
@@ -519,5 +324,42 @@ func TestNeatEmpty(t *testing.T) {
 			t.Errorf("test case '%s' failed. want: '%s' have: '%s'", c.title, c.expect, resJSON)
 		}
 
+	}
+}
+
+func TestNeat(t *testing.T) {
+	testsDir := "../test/fixtures"
+	testFiles, err := ioutil.ReadDir(testsDir)
+	if err != nil {
+		t.Fatalf("can't list tests in: %s", testsDir)
+	}
+	for _, f := range testFiles {
+		fName := f.Name()
+		fParts := strings.Split(fName, "-")
+		if fParts[1] == "raw.json" {
+			fFullName := filepath.Join(testsDir, f.Name())
+			inBytes, err := ioutil.ReadFile(fFullName)
+			if err != nil {
+				t.Errorf("can't read file: %s", fFullName)
+			}
+			expFullName := filepath.Join(testsDir, fParts[0]+"-neat.json")
+			expBytes, err := ioutil.ReadFile(expFullName)
+			if err != nil {
+				t.Errorf("can't read file: %s", expFullName)
+			}
+			resJSON, err := Neat(string(inBytes))
+			if err != nil {
+				t.Errorf("error in Neat for case: %s: %v", fName, err)
+				continue
+			}
+			equal, err := testutil.JSONEqual(resJSON, string(expBytes))
+			if err != nil {
+				t.Errorf("error in JSONEqual for case: %s: %v", fName, err)
+				continue
+			}
+			if !equal {
+				t.Errorf("test case failed: %s:\nhave %s\nwant %s", fName, string(expBytes), resJSON)
+			}
+		}
 	}
 }
