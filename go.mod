@@ -9,7 +9,6 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/tidwall/gjson v1.3.2
 	github.com/tidwall/sjson v1.0.4
-	k8s.io/api v0.17.0
 	k8s.io/apimachinery v0.17.0
 	k8s.io/client-go v0.17.0
 	k8s.io/kubernetes v1.17.0
