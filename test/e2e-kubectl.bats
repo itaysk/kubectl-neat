@@ -9,24 +9,20 @@ function setup() {
     ln -s "$(pwd)/kubectl-neat_${runtime_os}" "$plugin"
     # PATH modification here has no external affect since bats runs in a subshell
     PATH="$PATH":"$tmpdir"
-    kubectl delete -f ./test/fixtures/pod-1-neat.json 2>/dev/null || true
-    kubectl create -f ./test/fixtures/pod-1-neat.json
 }
 
 function teardown() {
-    kubectl delete -f ./test/fixtures/pod-1-neat.json 
     rm -rf "$tmpdir"
 }
 
 @test "plugin - json" {
-    run kubectl "$plugin_name" pod myapp -o json
+    run kubectl "$plugin_name" get svc kubernetes -o json
     [ "$status" -eq 0 ]
-    jq --exit-status --argfile desired ./test/fixtures/pod-1-neat.json 'contains($desired)' <<<"$output"
+    [[ $output == "{"* ]]
 }
 
 @test "plugin - yaml" {
-    run kubectl "$plugin_name" pod myapp -o yaml
+    run kubectl "$plugin_name" get svc kubernetes -o yaml
     [ "$status" -eq 0 ]
-    local outputjson=$(yq r --tojson -<<<"$output")
-    jq --exit-status --argfile desired ./test/fixtures/pod-1-neat.json 'contains($desired)' <<<"$outputjson"
+    [[ $output == "apiVersion"* ]]
 }
