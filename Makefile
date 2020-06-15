@@ -1,26 +1,23 @@
 
 # TL;DR:
 # make build: build locally
-# make test: test all
-# make test-X: test X
+# make test: run all tests
+# make test-unit: just unit tests
+# make test-e2e: just e2e tests
 # make release: after git tag, release to github and prepare krew file
 
-.PHONY: test test-unit test-component test-kubectl test-install build goreleaser release clean
+.PHONY: test test-unit test-e2e build goreleaser release clean
 os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
-test: test-unit test-component test-kubectl test-install
+test: test-unit test-component test-kubectl test-krew
 
 test-unit:
-	go test ./...
+	go test -v ./...
 
-test-component: kubectl-neat_$(os)
-	bats ./test/component.bats
-
-test-kubectl: kubectl-neat_$(os)
-	bats ./test/kubectl.bats
-
-test-install: dist/kubectl-neat_$(os).tar.gz dist/checksums.txt
-	bats ./test/install.bats
+test-e2e: kubectl-neat_$(os) dist/kubectl-neat_$(os).tar.gz dist/checksums.txt
+	bats ./test/e2e-cli.bats
+	bats ./test/e2e-kubectl.bats
+	bats ./test/e2e-krew.bats
 
 build: kubectl-neat_$(os)
 
