@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# based on Argbash: https://argbash.io
+
+die()
+{
+	local _ret=$2
+	test -n "$_ret" || _ret=1
+	test "$_PRINT_HELP" = yes && print_help >&2
+	echo "$1" >&2
+	exit ${_ret}
+}
+
+_positionals=()
+_arg_output=
+# _arg_namespace=
+
+parse_commandline()
+{
+	_positionals_count=0
+	while test $# -gt 0
+	do
+		_key="$1"
+		case "$_key" in
+			-o|--output)
+				test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+				_arg_output="$2"
+				shift
+				;;
+			--output=*)
+				_arg_output="${_key##--output=}"
+				;;
+			-o*)
+				_arg_output="${_key##-o}"
+				;;
+			# -n|--namespace)
+			# 	test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+			# 	_arg_namespace="$2"
+			# 	shift
+			# 	;;
+			# --namespace=*)
+			# 	_arg_namespace="${_key##--namespace=}"
+			# 	;;
+			# -n*)
+			# 	_arg_namespace="${_key##-n}"
+			# 	;;
+			*)
+				_last_positional="$1"
+				_positionals+=("$_last_positional")
+				_positionals_count=$((_positionals_count + 1))
+				;;
+		esac
+		shift
+	done
+}
+
+parse_commandline "$@"
+rootDir="$(dirname "${BASH_SOURCE[0]}")/fixtures"
+
+[ "${_positionals[0]}" = "get" ] && [ "${_positionals[1]}" = "pods" ] && [ "${_positionals[2]}" = "mypod" ] && cat "$rootDir/pod1-raw.$_arg_output" && exit 0
+[ "${_positionals[0]}" = "get" ] && [ "${_positionals[1]}" = "pods" ] && cat "$rootDir/list1-raw.$_arg_output" && exit 0
+
+die "invalid args: positionals: ${_positionals[*]}. output: $_arg_output"
