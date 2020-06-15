@@ -19,7 +19,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"unicode"
@@ -31,12 +30,15 @@ import (
 var outputFormat *string
 var inputFile *string
 
-// Execute is the entry point for the command package
-func Execute() {
+func init() {
 	outputFormat = rootCmd.PersistentFlags().StringP("output", "o", "yaml", "output format: yaml or json")
 	inputFile = rootCmd.Flags().StringP("file", "f", "-", "file path to neat, or - to read from stdin")
 	rootCmd.MarkFlagFilename("file")
-	rootCmd.AddCommand(getCommand)
+	rootCmd.AddCommand(getCmd)
+}
+
+// Execute is the entry point for the command package
+func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -50,60 +52,56 @@ kubectl get pod mypod -oyaml | kubectl neat -o json
 kubectl neat -f - <./my-pod.json
 kubectl neat -f ./my-pod.json
 kubectl neat -f ./my-pod.json --output yaml`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var in, out []byte
 		var err error
 		if *inputFile == "-" {
-			stat, _ := os.Stdin.Stat()
-			if (stat.Mode() & os.ModeCharDevice) == 0 {
-				in, err = ioutil.ReadAll(os.Stdin)
-				if err != nil {
-					cmd.PrintErrf("error reading stdin : %v", err)
-					return
-				}
-			} else {
-				cmd.PrintErrln("error reading from stdin")
-				cmd.Usage()
-				return
-			}
+			stdin := cmd.InOrStdin()
+			in, err = ioutil.ReadAll(stdin)
 		} else {
 			in, err = ioutil.ReadFile(*inputFile)
+			if err != nil {
+				return err
+			}
 		}
+		outFormat := *outputFormat
 		if !cmd.Flag("output").Changed {
-			*outputFormat = "same"
+			outFormat = "same"
 		}
-		out, err = NeatYAMLOrJSON(in, *outputFormat)
+		out, err = NeatYAMLOrJSON(in, outFormat)
 		if err != nil {
-			log.Fatalf("error neating : %v", err)
+			return err
 		}
-		fmt.Println(string(out))
+		cmd.Println(string(out))
+		return nil
 	},
 }
 
-var getCommand = &cobra.Command{
+var kubectl string = "kubectl"
+
+var getCmd = &cobra.Command{
 	Use: "get",
 	Example: `kubectl neat get pod mypod -oyaml
 kubectl neat get svc -n default myservice --output json`,
 	FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true}, //don't validate kubectl get's flags
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var in, out []byte
 		var err error
 		cmdArgs := append([]string{"get", "-o"}, *outputFormat)
 		cmdArgs = append(cmdArgs, args...)
-		kubectlCmd := exec.Command("kubectl", cmdArgs...)
+		kubectlCmd := exec.Command(kubectl, cmdArgs...)
 		kres, err := kubectlCmd.CombinedOutput()
 		if err != nil {
-			cmd.PrintErrf("Error: command %s: %v: %s", kubectlCmd.Args, err, string(kres))
-			cmd.Usage()
-			return
+			return err
 		}
 		in = kres
 
 		out, err = NeatYAMLOrJSON(in, *outputFormat)
 		if err != nil {
-			log.Fatalf("error neating : %v", err)
+			return err
 		}
-		fmt.Println(string(out))
+		cmd.Println(string(out))
+		return nil
 	},
 }
 
@@ -116,7 +114,7 @@ func NeatYAMLOrJSON(in []byte, outputFormat string) (out []byte, err error) {
 	if itsYaml {
 		injsonbytes, err := yaml.YAMLToJSON(in)
 		if err != nil {
-			log.Fatalf("error converting from yaml to json : %v", err)
+			return nil, fmt.Errorf("error converting from yaml to json : %v", err)
 		}
 		injson = string(injsonbytes)
 	} else {
@@ -125,13 +123,13 @@ func NeatYAMLOrJSON(in []byte, outputFormat string) (out []byte, err error) {
 
 	outjson, err = Neat(injson)
 	if err != nil {
-		log.Fatalf("error neating : %v", err)
+		return nil, fmt.Errorf("error neating : %v", err)
 	}
 
 	if outputFormat == "yaml" || (outputFormat == "same" && itsYaml) {
 		out, err = yaml.JSONToYAML([]byte(outjson))
 		if err != nil {
-			log.Fatalf("error converting from json to yaml : %v", err)
+			return nil, fmt.Errorf("error converting from json to yaml : %v", err)
 		}
 	} else {
 		out = []byte(outjson)
