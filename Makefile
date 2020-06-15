@@ -14,16 +14,16 @@ test: test-unit test-component test-kubectl test-krew
 test-unit:
 	go test -v ./...
 
-test-e2e: kubectl-neat_$(os) dist/kubectl-neat_$(os).tar.gz dist/checksums.txt
+test-e2e: dirst/kubectl-neat_$(os) dist/kubectl-neat_$(os).tar.gz dist/checksums.txt
 	bats ./test/e2e-cli.bats
 	bats ./test/e2e-kubectl.bats
 	bats ./test/e2e-krew.bats
 
-build: kubectl-neat_$(os)
+build: dist/kubectl-neat_$(os)
 
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
-kubectl-neat_%: $(SRC)
-	GOOS=$* go build -o $(@F)
+dist/kubectl-neat_%: $(SRC)
+	GOOS=$* go build -o dist/$(@F)
 
 # release by default will not publish. run with `publish=1` to publish
 goreleaserflags = --skip-publish --snapshot
@@ -52,4 +52,3 @@ release: dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/che
 
 clean:
 	rm -rf dist
-	rm kubectl-neat*
