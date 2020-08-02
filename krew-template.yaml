@@ -12,7 +12,7 @@ spec:
     removing default values, runtime information, and other internal fields.
     Examples:
     `$ kubectl get pod mypod -o yaml | kubectl neat`
-    `$ kubectl neat pod mypod -o yaml`
+    `$ kubectl neat get pod mypod -o yaml`
   platforms:
     - selector:
         matchLabels:
