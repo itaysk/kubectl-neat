@@ -33,6 +33,8 @@ var inputFile *string
 func init() {
 	outputFormat = rootCmd.PersistentFlags().StringP("output", "o", "yaml", "output format: yaml or json")
 	inputFile = rootCmd.Flags().StringP("file", "f", "-", "file path to neat, or - to read from stdin")
+	rootCmd.SetOut(os.Stdout)
+	rootCmd.SetErr(os.Stderr)
 	rootCmd.MarkFlagFilename("file")
 	rootCmd.AddCommand(getCmd)
 }
@@ -40,7 +42,7 @@ func init() {
 // Execute is the entry point for the command package
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		rootCmd.PrintErr(err) // can't use PrintErrln or PrintErrf due to a bug https://github.com/spf13/cobra/pull/894
 		os.Exit(1)
 	}
 }
