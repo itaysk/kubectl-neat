@@ -1,28 +1,30 @@
 #!/usr/bin/env bats
+load bats-workaround
 runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]') 
-exe="./kubectl-neat_${runtime_os}"
+exe="dist/kubectl-neat_${runtime_os}"
 rootDir="./test/fixtures"
 
 @test "invalid args 1" {
-    run "$exe" -foo
+    echo $exe >&3
+    run2 "$exe" --foo
     [ $status -eq 1 ]
-    [[ "$output" == "Error"* ]]
+    [[ "$stderr" == "unknown flag: --foo" ]]
 }
 
 @test "invalid args 2" {
-    run "$exe" get -foo
+    run2 "$exe" get --foo
     [ $status -eq 1 ]
-    [[ "$output" == "Error"* ]]
+    [[ "$stderr" == "Error invoking kubectl"* ]]
 }
 
 @test "invalid args 3" {
-    run "$exe" foo
+    run2 "$exe" foo
     [ $status -eq 1 ]
-    [[ "$output" == "Error"* ]]
+    [[ "$stderr" == 'unknown command "foo" for "kubectl-neat"' ]]
 }
 
 @test "local file" {
-    run "$exe" -f - <"$rootDir/pod1-raw.yaml"
+    run2 "$exe" -f - <"$rootDir/pod1-raw.yaml"
     [ $status -eq 0 ]
-    [[ "$output" == "apiVersion"* ]]
+    [[ "$stdout" == "apiVersion"* ]]
 }

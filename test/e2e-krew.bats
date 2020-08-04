@@ -1,4 +1,5 @@
 #!/usr/bin/env bats
+load bats-workaround
 
 function setup() {
     dir="dist"
@@ -13,7 +14,7 @@ function teardown() {
 }
 
 @test "krew install" {
-    run kubectl "$plugin" get svc kubernetes -oyaml
-    [ "$status"  -eq 0 ]
-    [ "${lines[1]}" = "kind: Service" ]
+    run2 kubectl "$plugin" get svc kubernetes -n default
+    [ "$status" -eq 0 ]
+    [ "${stdoutLines[1]}" = "kind: Service" ]
 }
