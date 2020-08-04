@@ -14,7 +14,7 @@ function teardown() {
 }
 
 @test "krew install" {
-    run2 kubectl "$plugin" get svc kubernetes -n default
+    run2 kubectl "$plugin" get -- svc kubernetes -n default
     [ "$status" -eq 0 ]
     [ "${stdoutLines[1]}" = "kind: Service" ]
 }

@@ -134,7 +134,7 @@ func TestGetCmd(t *testing.T) {
 		{
 			args: []string{""},
 			assertError: func(err error) bool {
-				return fmt.Sprintf("%T", err) == "*exec.ExitError"
+				return strings.HasPrefix(err.Error(), "Error invoking kubectl")
 			},
 			expOut: "",
 			expErr: "",
