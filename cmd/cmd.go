@@ -83,22 +83,42 @@ var kubectl string = "kubectl"
 
 var getCmd = &cobra.Command{
 	Use: "get",
-	Example: `kubectl neat get pod mypod -oyaml
-kubectl neat get svc -n default myservice --output json`,
-	FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true}, //don't validate kubectl get's flags
+	Example: `kubectl neat get -- pod mypod -oyaml
+kubectl neat get -- svc -n default myservice --output json`,
+	FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true}, //don't try to validate kubectl get's flags
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var in, out []byte
+		var out []byte
 		var err error
-		cmdArgs := append([]string{"get", "-o"}, *outputFormat)
-		cmdArgs = append(cmdArgs, args...)
+		//reset defaults
+		//there are two output settings in this subcommand: kubectl get's and kubectl-neat's
+		//any combination of those can be provided by using the output flag in either side of the --
+		//the most efficient is kubectl: json, kubectl-neat: yaml
+		//0--0->Y--J #choose what's best for us
+		//0--Y->Y--Y #user did specify output in kubectl, so respect that
+		//0--J->J--J #user did specify output in kubectl, so respect that
+		//Y--0->Y--J #user doesn't care about kubectl so use json but convert back
+		//J--0->J--J #user expects json so use it for foth
+		//if the user specified both side we can't touch it
+
+		//the desired kubectl get output is always json, unless it was explicitly set by the user to yaml in which case the arg is overriden when concatenating the args later
+		cmdArgs := append([]string{"get", "-o", "json"}, args...)
 		kubectlCmd := exec.Command(kubectl, cmdArgs...)
 		kres, err := kubectlCmd.CombinedOutput()
 		if err != nil {
-			return err
+			return fmt.Errorf("Error invoking kubectl as %v %v", kubectlCmd.Args, err)
 		}
-		in = kres
-
-		out, err = NeatYAMLOrJSON(in, *outputFormat)
+		//handle the case of 0--J->J--J
+		outFormat := *outputFormat
+		kubeout := "yaml"
+		for _, arg := range args {
+			if arg == "json" || arg == "ojson" {
+				outFormat = "json"
+			}
+		}
+		if !cmd.Flag("output").Changed && kubeout == "json" {
+			outFormat = "json"
+		}
+		out, err = NeatYAMLOrJSON(kres, outFormat)
 		if err != nil {
 			return err
 		}
@@ -107,12 +127,14 @@ kubectl neat get svc -n default myservice --output json`,
 	},
 }
 
+func isJSON(s []byte) bool {
+	return bytes.HasPrefix(bytes.TrimLeftFunc(s, unicode.IsSpace), []byte{'{'})
+}
+
 // NeatYAMLOrJSON converts 'in' to json if needed, invokes neat, and converts back if needed according the the outputFormat argument: yaml/json/same
 func NeatYAMLOrJSON(in []byte, outputFormat string) (out []byte, err error) {
 	var injson, outjson string
-
-	// detect if 'in' is yaml or json
-	itsYaml := !bytes.HasPrefix(bytes.TrimLeftFunc(in, unicode.IsSpace), []byte{'{'})
+	itsYaml := !isJSON(in)
 	if itsYaml {
 		injsonbytes, err := yaml.YAMLToJSON(in)
 		if err != nil {

@@ -59,8 +59,8 @@ This mode is invoked by calling the `get` subcommand, i.e `kubectl neat get ...`
 
 Examples:
 ```bash
-kubectl neat get pod mypod -oyaml
-kubectl neat get svc -n default myservice --output json
+kubectl neat get -- pod mypod -oyaml
+kubectl neat get -- svc -n default myservice --output json
 ```
 
 # How it works
