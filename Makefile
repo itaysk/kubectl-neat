@@ -9,13 +9,15 @@
 .PHONY: test test-unit test-e2e build goreleaser release clean
 os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
-test: test-unit test-component test-kubectl test-krew
+test: test-unit test-e2e test-integration
 
 test-unit:
 	go test -v ./...
 
-test-e2e: dirst/kubectl-neat_$(os) dist/kubectl-neat_$(os).tar.gz dist/checksums.txt
+test-e2e: dist/kubectl-neat_$(os) 
 	bats ./test/e2e-cli.bats
+
+test-integration: dist/kubectl-neat_$(os).tar.gz dist/kubectl-neat_$(os)*/kubectl-neat dist/checksums.txt
 	bats ./test/e2e-kubectl.bats
 	bats ./test/e2e-krew.bats
 
@@ -31,7 +33,7 @@ ifdef publish
 	goreleaserflags =
 endif
 # relase always re-builds (no dependencies on purpose)
-goreleaser:
+goreleaser: $(SRC)
 	goreleaser --rm-dist $(goreleaserflags) 
 
 dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt: goreleaser
