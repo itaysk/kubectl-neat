@@ -18,13 +18,13 @@ function teardown() {
 }
 
 @test "plugin - json" {
-    run2 kubectl "$plugin_name" get -o json svc kubernetes -n default
+    run2 kubectl "$plugin_name" get -o json -- svc kubernetes -n default
     [ "$status" -eq 0 ]
     [[ $stdout == "{"* ]]
 }
 
 @test "plugin - yaml" {
-    run2 kubectl "$plugin_name" get svc kubernetes -n default -o yaml
+    run2 kubectl "$plugin_name" get -- svc kubernetes -n default
     [ "$status" -eq 0 ]
     [[ $stdout == "apiVersion"* ]]
 }
