@@ -1,0 +1,21 @@
+{
+  "apiVersion": "rbac.authorization.k8s.io/v1",
+  "kind": "Role",
+  "metadata": {"name":"kubeadm:kubelet-config-1.18","namespace":"kube-system"},
+  "rules": [
+      {
+          "apiGroups": [
+              ""
+          ],
+          "resourceNames": [
+              "kubelet-config-1.18"
+          ],
+          "resources": [
+              "configmaps"
+          ],
+          "verbs": [
+              "get"
+          ]
+      }
+  ]
+}

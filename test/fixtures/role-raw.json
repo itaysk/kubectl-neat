@@ -1,0 +1,40 @@
+{
+  "apiVersion": "rbac.authorization.k8s.io/v1",
+  "kind": "Role",
+  "metadata": {
+      "creationTimestamp": "2020-05-08T19:45:27Z",
+      "managedFields": [
+          {
+              "apiVersion": "rbac.authorization.k8s.io/v1",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                  "f:rules": {}
+              },
+              "manager": "kubeadm",
+              "operation": "Update",
+              "time": "2020-05-08T19:45:27Z"
+          }
+      ],
+      "name": "kubeadm:kubelet-config-1.18",
+      "namespace": "kube-system",
+      "resourceVersion": "162",
+      "selfLink": "/apis/rbac.authorization.k8s.io/v1/namespaces/kube-system/roles/kubeadm:kubelet-config-1.18",
+      "uid": "bb5dc308-25ee-4cc3-a7d0-77693133f6ef"
+  },
+  "rules": [
+      {
+          "apiGroups": [
+              ""
+          ],
+          "resourceNames": [
+              "kubelet-config-1.18"
+          ],
+          "resources": [
+              "configmaps"
+          ],
+          "verbs": [
+              "get"
+          ]
+      }
+  ]
+}
