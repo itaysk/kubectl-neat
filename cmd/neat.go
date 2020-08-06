@@ -199,8 +199,9 @@ func findEmptyPathsRecursive(cur gjson.Result, path string, res *[]string) {
 func isResultEmpty(j gjson.Result) bool {
 	v := j.Value()
 	switch vt := v.(type) {
-	case string:
-		return vt == ""
+	// empty string != lack of string. keep empty strings as it's meaningful data
+	// case string:
+	// 	return vt == ""
 	case []interface{}:
 		return len(vt) == 0
 	case map[string]interface{}:

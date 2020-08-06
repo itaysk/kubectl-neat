@@ -290,13 +290,8 @@ func TestNeatEmpty(t *testing.T) {
 		},
 		{
 			title:  "empty second arrray element",
-			data:   `{ "foo": [ "bar", "" ] }`,
+			data:   `{ "foo": [ "bar", {} ] }`,
 			expect: `{ "foo": [ "bar" ] }`,
-		},
-		{
-			title:  "empty string",
-			data:   `{ "foo": "bar", "baz": "" }`,
-			expect: `{ "foo": "bar"}`,
 		},
 		{
 			title:  "empty array object",
