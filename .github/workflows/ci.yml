@@ -1,5 +1,10 @@
 name: CI
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
 jobs:
 
   build:
@@ -16,6 +21,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
 
+      - name: Check gofmt
+        run: test -z "$(gofmt -s -d .)"
+      
       - name: Build
         run: make build
 
