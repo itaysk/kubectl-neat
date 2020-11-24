@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 	"unicode"
 
 	"github.com/ghodss/yaml"
@@ -131,11 +132,25 @@ func isJSON(s []byte) bool {
 	return bytes.HasPrefix(bytes.TrimLeftFunc(s, unicode.IsSpace), []byte{'{'})
 }
 
+func multiYamlToKubeList(yaml string) string {
+	yamls := strings.Split(yaml, "---")
+	res := `apiVersion: v1
+kind: List
+items:`
+	for _, y := range yamls {
+		res = res + "\n- " + strings.Join(strings.Split(strings.TrimSpace(y), "\n"), "\n  ")
+	}
+	return res
+}
+
 // NeatYAMLOrJSON converts 'in' to json if needed, invokes neat, and converts back if needed according the the outputFormat argument: yaml/json/same
 func NeatYAMLOrJSON(in []byte, outputFormat string) (out []byte, err error) {
 	var injson, outjson string
 	itsYaml := !isJSON(in)
 	if itsYaml {
+		if strings.Contains(string(in), "---") {
+			in = []byte(multiYamlToKubeList(string(in)))
+		}
 		injsonbytes, err := yaml.YAMLToJSON(in)
 		if err != nil {
 			return nil, fmt.Errorf("error converting from yaml to json : %v", err)

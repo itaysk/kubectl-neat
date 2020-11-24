@@ -39,6 +39,7 @@ func TestRootCmd(t *testing.T) {
 	if err != nil {
 		t.Errorf("error readin test data file %s: %v", resourceDataYAMLPath, err)
 	}
+	multiYAMLPath := "../test/fixtures/multi1-raw.yaml"
 
 	testcases := []struct {
 		args        []string
@@ -89,6 +90,12 @@ func TestRootCmd(t *testing.T) {
 			stdin:       "",
 			assertError: assertErrorNil,
 			expOut:      "apiVersion",
+		},
+		{
+			args:        []string{"-f", multiYAMLPath},
+			stdin:       "",
+			assertError: assertErrorNil,
+			expOut:      "items:\n-",
 		},
 	}
 
