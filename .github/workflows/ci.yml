@@ -9,7 +9,10 @@ jobs:
 
   build:
     name: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
 
       - name: Setup Go
@@ -23,9 +26,11 @@ jobs:
 
       - name: Check gofmt
         run: test -z "$(gofmt -s -d .)"
+        if: matrix.os != 'windows-latest'
       
       - name: Build
         run: make build
+        if: matrix.os != 'windows-latest'
 
       - name: Test
         run: make test-unit

@@ -323,7 +323,7 @@ func TestNeatEmpty(t *testing.T) {
 }
 
 func TestNeat(t *testing.T) {
-	testsDir := "../test/fixtures"
+	testsDir := filepath.Join("..", "test", "fixtures")
 	testFiles, err := ioutil.ReadDir(testsDir)
 	if err != nil {
 		t.Fatalf("can't list tests in: %s", testsDir)

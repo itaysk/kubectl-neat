@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -27,13 +28,13 @@ func assertErrorNil(err error) bool {
 	return err == nil
 }
 func TestRootCmd(t *testing.T) {
-	resourceDataJSONPath := "../test/fixtures/service1-raw.json"
+	resourceDataJSONPath := filepath.Join("..", "test", "fixtures", "service1-raw.json")
 	resourceDataJSONBytes, err := ioutil.ReadFile(resourceDataJSONPath)
 	resourceDataJSON := string(resourceDataJSONBytes)
 	if err != nil {
 		t.Errorf("error readin test data file %s: %v", resourceDataJSONPath, err)
 	}
-	resourceDataYAMLPath := "../test/fixtures/service1-raw.yaml"
+	resourceDataYAMLPath := filepath.Join("..", "test", "fixtures", "service1-raw.yaml")
 	resourceDataYAMLBytes, err := ioutil.ReadFile(resourceDataYAMLPath)
 	resourceDataYAML := string(resourceDataYAMLBytes)
 	if err != nil {
@@ -124,7 +125,7 @@ func TestRootCmd(t *testing.T) {
 }
 
 func TestGetCmd(t *testing.T) {
-	kubectl = "../test/kubectl-stub"
+	kubectl = filepath.Join("..", "test", "kubectl-stub")
 	testcases := []struct {
 		args        []string
 		assertError func(err error) bool
