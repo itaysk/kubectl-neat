@@ -32,5 +32,13 @@ jobs:
         run: make build
         if: matrix.os != 'windows-latest'
 
-      - name: Test
+      - name: Unit Test
         run: make test-unit
+
+      - name: Setup BATS for E2E Test
+        uses: mig4/setup-bats@v1
+        with:
+          bats-version: 1.2.1
+
+      - name: E2E Test
+        run: make test-e2e
