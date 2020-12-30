@@ -24,6 +24,17 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
 
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/go/pkg/mod              # Module download cache
+            ~/.cache/go-build         # Build cache (Linux)
+            ~/Library/Caches/go-build # Build cache (Mac)
+            '%LocalAppData%\go-build' # Build cache (Windows)
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: Check gofmt
         run: test -z "$(gofmt -s -d .)"
         if: matrix.os != 'windows-latest'
