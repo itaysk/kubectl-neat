@@ -125,7 +125,11 @@ func TestRootCmd(t *testing.T) {
 }
 
 func TestGetCmd(t *testing.T) {
-	kubectl = filepath.Join("..", "test", "kubectl-stub")
+	kubectlStub, err := filepath.Abs(filepath.Join("..", "test", "kubectl-stub"))
+	if err != nil {
+		t.Errorf("could not get absolute path to kubectl stub: %v", err)
+	}
+	kubectl = kubectlStub
 	testcases := []struct {
 		args        []string
 		assertError func(err error) bool
