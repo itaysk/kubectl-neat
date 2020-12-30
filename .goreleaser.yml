@@ -5,10 +5,14 @@ builds:
   goos:
     - darwin
     - linux
+    - windows
   goarch:
     - amd64
 archives:
 - name_template: "{{ .ProjectName }}_{{ .Os }}"
+  format_overrides:
+    - goos: windows
+      format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
