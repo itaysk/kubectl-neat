@@ -12,6 +12,7 @@ require (
 	k8s.io/apimachinery v0.17.0
 	k8s.io/client-go v0.17.0
 	k8s.io/kubernetes v1.17.0
+	github.com/andreazorzetto/yh v0.4.0
 )
 
 replace (

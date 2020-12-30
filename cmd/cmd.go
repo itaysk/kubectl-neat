@@ -23,16 +23,19 @@ import (
 	"os/exec"
 	"unicode"
 
+	"github.com/andreazorzetto/yh/highlight"
 	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
 )
 
 var outputFormat *string
 var inputFile *string
+var color *bool
 
 func init() {
 	outputFormat = rootCmd.PersistentFlags().StringP("output", "o", "yaml", "output format: yaml or json")
 	inputFile = rootCmd.Flags().StringP("file", "f", "-", "file path to neat, or - to read from stdin")
+	color = rootCmd.PersistentFlags().BoolP("color", "c", false, "colored output with syntax highlighting")
 	rootCmd.SetOut(os.Stdout)
 	rootCmd.SetErr(os.Stderr)
 	rootCmd.MarkFlagFilename("file")
@@ -75,7 +78,11 @@ kubectl neat -f ./my-pod.json --output yaml`,
 		if err != nil {
 			return err
 		}
-		cmd.Print(string(out))
+		// cmd.Print(string(out))
+		err = printOutput(cmd, out)
+		if err != nil {
+			return err
+		}
 		return nil
 	},
 }
@@ -123,7 +130,10 @@ kubectl neat get -- svc -n default myservice --output json`,
 		if err != nil {
 			return err
 		}
-		cmd.Println(string(out))
+		err = printOutput(cmd, out)
+		if err != nil {
+			return err
+		}
 		return nil
 	},
 }
@@ -140,6 +150,21 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("kubectl-neat version: %s\n", Version)
 	},
+}
+
+func printOutput(cmd *cobra.Command, out []byte) error {
+	if *color {
+		outreader := bytes.NewReader(out)
+		highlightedOutput, err := highlight.Highlight(outreader)
+		if err != nil {
+			return err
+		}
+		cmd.Println(highlightedOutput)
+	} else {
+		cmd.Println(string(out))
+	}
+
+	return nil
 }
 
 func isJSON(s []byte) bool {
