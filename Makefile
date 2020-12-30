@@ -14,18 +14,18 @@ test: test-unit test-e2e test-integration
 test-unit:
 	go test -v ./...
 
-test-e2e: dist/kubectl-neat_$(os) 
+test-e2e: dist/kubectl-neat
 	bats ./test/e2e-cli.bats
 
 test-integration: dist/kubectl-neat_$(os).tar.gz dist/kubectl-neat_$(os)*/kubectl-neat dist/checksums.txt
 	bats ./test/e2e-kubectl.bats
 	bats ./test/e2e-krew.bats
 
-build: dist/kubectl-neat_$(os)
+build: dist/kubectl-neat
 
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
-dist/kubectl-neat_%: $(SRC)
-	GOOS=$* go build -o dist/$(@F)
+dist/kubectl-neat: $(SRC)
+	go build -o dist/$(@F)
 
 # release by default will not publish. run with `publish=1` to publish
 goreleaserflags = --skip-publish --snapshot
