@@ -124,7 +124,7 @@ func TestRootCmd(t *testing.T) {
 }
 
 func TestGetCmd(t *testing.T) {
-	kubectl = "../test/kubectl-stub"
+	kubectl = []string{"bash", "../test/kubectl-stub"}
 	testcases := []struct {
 		args        []string
 		assertError func(err error) bool

@@ -1,11 +1,9 @@
 #!/usr/bin/env bats
 load bats-workaround
-runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]') 
-exe="dist/kubectl-neat_${runtime_os}"
+exe="dist/kubectl-neat"
 rootDir="./test/fixtures"
 
 @test "invalid args 1" {
-    echo $exe >&3
     run2 "$exe" --foo
     [ $status -eq 1 ]
     [[ "$stderr" == "unknown flag: --foo" ]]

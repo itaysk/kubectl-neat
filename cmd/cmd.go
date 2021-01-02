@@ -79,7 +79,7 @@ kubectl neat -f ./my-pod.json --output yaml`,
 	},
 }
 
-var kubectl string = "kubectl"
+var kubectl []string = []string{"kubectl"}
 
 var getCmd = &cobra.Command{
 	Use: "get",
@@ -101,8 +101,8 @@ kubectl neat get -- svc -n default myservice --output json`,
 		//if the user specified both side we can't touch it
 
 		//the desired kubectl get output is always json, unless it was explicitly set by the user to yaml in which case the arg is overriden when concatenating the args later
-		cmdArgs := append([]string{"get", "-o", "json"}, args...)
-		kubectlCmd := exec.Command(kubectl, cmdArgs...)
+		cmdArgs := append(kubectl[1:], append([]string{"get", "-o", "json"}, args...)...)
+		kubectlCmd := exec.Command(kubectl[0], cmdArgs...)
 		kres, err := kubectlCmd.CombinedOutput()
 		if err != nil {
 			return fmt.Errorf("Error invoking kubectl as %v %v", kubectlCmd.Args, err)

@@ -1,47 +1,33 @@
-
-# TL;DR:
-# make build: build locally
-# make test: run all tests
-# make test-unit: just unit tests
-# make test-e2e: just e2e tests
-# make release: after git tag, release to github and prepare krew file
-
-.PHONY: test test-unit test-e2e build goreleaser release clean
-os ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
-
-test: test-unit test-e2e test-integration
-
-test-unit:
+.PHONY: test test-e2e test-integration build goreleaser release clean
+SRC := $(shell find . -type f -name '\*.go')
+OS := $(if $(OS:Windows_NT=windows),windows,$(shell uname -s | tr '[:upper:]' '[:lower:]'))# on windows, OS is set by the system
+BIN_OUT := dist/kubectl-neat
+ARCHIVE_OUT := $(BIN_OUT)_$(OS)$(if $(findstring windows,$(OS)),.zip,.tar.gz)
+test: $(SRC) $(shell find ./test/fixtures -type f)
 	go test -v ./...
 
-test-e2e: dist/kubectl-neat_$(os) 
-	bats ./test/e2e-cli.bats
+build: $(BIN_OUT)
 
-test-integration: dist/kubectl-neat_$(os).tar.gz dist/kubectl-neat_$(os)*/kubectl-neat dist/checksums.txt
-	bats ./test/e2e-kubectl.bats
+test-e2e: $(BIN_OUT)
+	PATH=$$PATH bats test/e2e-cli.bats #workaround PATH contains spaces in windows
+
+test-integration: $(BIN_OUT)
+	exe=$(abspath $(BIN_OUT)) bats ./test/e2e-kubectl.bats
 	bats ./test/e2e-krew.bats
 
-build: dist/kubectl-neat_$(os)
-
-SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
-dist/kubectl-neat_%: $(SRC)
-	GOOS=$* go build -o dist/$(@F)
+$(BIN_OUT): $(filter-out *_test.go,$(SRC))
+	go build -o $(@)
 
 # release by default will not publish. run with `publish=1` to publish
 goreleaserflags = --skip-publish --snapshot
 ifdef publish
 	goreleaserflags =
 endif
-# relase always re-builds (no dependencies on purpose)
-goreleaser: $(SRC)
+dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/kubectl-neat_windows.zip dist/checksums.txt &: $(SRC) .goreleaser.yml
 	goreleaser --rm-dist $(goreleaserflags) 
 
-dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt: goreleaser
-	# no op recipe
-	@:
-
 release: publish = 1
-release: dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/checksums.txt
+release: dist/kubectl-neat_darwin.tar.gz dist/kubectl-neat_linux.tar.gz dist/kubectl-neat_windows.zip dist/checksums.txt
 	./krew-package.sh 'darwin' 'neat' './dist'
 	./krew-package.sh 'linux' 'neat' './dist'
 	# merge
