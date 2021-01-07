@@ -74,7 +74,7 @@ kubectl neat -f ./my-pod.json --output yaml`,
 		if err != nil {
 			return err
 		}
-		cmd.Println(string(out))
+		cmd.Print(string(out))
 		return nil
 	},
 }
