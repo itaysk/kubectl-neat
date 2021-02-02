@@ -17,7 +17,7 @@ and filter all the manifests through 'kubectl neat' before comparing the resourc
 `,
 	Example: `export KUBECTL_EXTERNAL_DIFF="kubectl neat diff"; kubectl diff -f manifest.yaml`,
 	Args:    cobra.ExactArgs(2),
-	RunE: func(cmd *cobra.Command, args []string)  error {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		return diffDirs(args[0], args[1])
 	},
 }
