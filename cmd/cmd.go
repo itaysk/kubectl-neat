@@ -29,14 +29,21 @@ import (
 
 var outputFormat *string
 var inputFile *string
+var isDiff *bool
 
 func init() {
 	outputFormat = rootCmd.PersistentFlags().StringP("output", "o", "yaml", "output format: yaml or json")
 	inputFile = rootCmd.Flags().StringP("file", "f", "-", "file path to neat, or - to read from stdin")
+
+	// FIXME: workaround for sub commands not working, using flag instead
+	// https://github.com/kubernetes/kubectl/issues/1015
+	isDiff = rootCmd.Flags().Bool("diff", false, "same as sub command 'kubectl-neat diff' (see kubectl issue 1015)")
+
 	rootCmd.SetOut(os.Stdout)
 	rootCmd.SetErr(os.Stderr)
 	rootCmd.MarkFlagFilename("file")
 	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(diffCmd)
 }
 
 // Execute is the entry point for the command package
@@ -54,7 +61,12 @@ kubectl get pod mypod -oyaml | kubectl neat -o json
 kubectl neat -f - <./my-pod.json
 kubectl neat -f ./my-pod.json
 kubectl neat -f ./my-pod.json --output yaml`,
+	Args: cobra.ArbitraryArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if *isDiff {
+			return diffDirs(args[0], args[1])
+		}
+
 		var in, out []byte
 		var err error
 		if *inputFile == "-" {
