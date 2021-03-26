@@ -3,11 +3,12 @@ load bats-workaround
 
 function setup() {
     runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    runtime_arch=$(go env GOARCH | tr '[:upper:]' '[:lower:]')
     tmpdir=$(mktemp -d)
     # rename the plugin to avoid conflicts with existing installation
     plugin_name="neat2"
     plugin="$tmpdir"/kubectl-"$plugin_name"
-    exe="$PWD/$(find dist -path \*dist/kubectl-neat_$runtime_os\*/kubectl-neat)"
+    exe="$PWD/$(find dist -path \*dist/kubectl-neat_${runtime_os}_${runtime_arch}\*/kubectl-neat)"
     ln -s "$exe" "$plugin"
     # PATH modification here has no external affect since bats runs in a subshell
     PATH="$PATH":"$tmpdir"

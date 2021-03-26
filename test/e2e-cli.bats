@@ -1,7 +1,8 @@
 #!/usr/bin/env bats
 load bats-workaround
-runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]') 
-exe="dist/kubectl-neat_${runtime_os}"
+runtime_os=$(uname -s | tr '[:upper:]' '[:lower:]')
+runtime_arch=$(go env GOARCH | tr '[:upper:]' '[:lower:]')
+exe="dist/kubectl-neat_${runtime_os}_${runtime_arch}"
 rootDir="./test/fixtures"
 
 @test "invalid args 1" {
