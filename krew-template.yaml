@@ -3,7 +3,7 @@ kind: Plugin
 metadata:
   name: neat
 spec:
-  version: "v2.0.2"
+  version: "v2.0.3"
   shortDescription: Remove clutter from Kubernetes manifests to make them more readable.
   homepage: https://github.com/itaysk/kubectl-neat
   description: |
@@ -18,7 +18,7 @@ spec:
         matchLabels:
           os: darwin
           arch: amd64
-      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.2/kubectl-neat_darwin_amd64.tar.gz
+      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_darwin_amd64.tar.gz
       sha256: ${sha256}
       files:
         - from: "/*"
@@ -28,7 +28,7 @@ spec:
         matchLabels:
           os: darwin
           arch: arm64
-      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.2/kubectl-neat_darwin_arm64.tar.gz
+      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_darwin_arm64.tar.gz
       sha256: ${sha256}
       files:
         - from: "/*"
@@ -38,7 +38,7 @@ spec:
         matchLabels:
           os: linux
           arch: amd64
-      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.2/kubectl-neat_linux_amd64.tar.gz
+      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_linux_amd64.tar.gz
       sha256: ${sha256}
       files:
         - from: "/*"
@@ -48,7 +48,7 @@ spec:
         matchLabels:
           os: linux
           arch: arm64
-      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.2/kubectl-neat_linux_arm64.tar.gz
+      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_linux_arm64.tar.gz
       sha256: ${sha256}
       files:
         - from: "/*"
