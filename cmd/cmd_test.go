@@ -17,8 +17,8 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 )
@@ -74,7 +74,8 @@ func TestRootCmd(t *testing.T) {
 			args:  []string{"-f", "/nogood"},
 			stdin: "",
 			assertError: func(err error) bool {
-				return fmt.Sprintf("%T", err) == "*os.PathError"
+				_, ok := err.(*os.PathError)
+				return ok
 			},
 			expOut: "",
 		},
