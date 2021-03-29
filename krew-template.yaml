@@ -20,9 +20,6 @@ spec:
           arch: amd64
       uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_darwin_amd64.tar.gz
       sha256: ${sha256}
-      files:
-        - from: "/*"
-          to: "."
       bin: "./kubectl-neat"
     - selector:
         matchLabels:
@@ -30,9 +27,6 @@ spec:
           arch: arm64
       uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_darwin_arm64.tar.gz
       sha256: ${sha256}
-      files:
-        - from: "/*"
-          to: "."
       bin: "./kubectl-neat"
     - selector:
         matchLabels:
@@ -40,9 +34,6 @@ spec:
           arch: amd64
       uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_linux_amd64.tar.gz
       sha256: ${sha256}
-      files:
-        - from: "/*"
-          to: "."
       bin: "./kubectl-neat"
     - selector:
         matchLabels:
@@ -50,7 +41,4 @@ spec:
           arch: arm64
       uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_linux_arm64.tar.gz
       sha256: ${sha256}
-      files:
-        - from: "/*"
-          to: "."
       bin: "./kubectl-neat"
