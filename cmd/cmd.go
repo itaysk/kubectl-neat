@@ -37,6 +37,7 @@ func init() {
 	rootCmd.SetErr(os.Stderr)
 	rootCmd.MarkFlagFilename("file")
 	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(versionCmd)
 }
 
 // Execute is the entry point for the command package
@@ -124,6 +125,15 @@ kubectl neat get -- svc -n default myservice --output json`,
 		}
 		cmd.Println(string(out))
 		return nil
+	},
+}
+
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print kubectl-neat version",
+	Long:  "Print the version of kubectl-neat",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("kubectl-neat version: %s\n", Version)
 	},
 }
 

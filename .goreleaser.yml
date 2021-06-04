@@ -8,6 +8,8 @@ builds:
   goarch:
     - amd64
     - arm64
+  ldflags:
+    - -s -w -X github.com/itaysk/kubectl-neat/cmd.Version={{ .Version }}
 archives:
 - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 checksum:
