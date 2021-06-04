@@ -128,6 +128,11 @@ kubectl neat get -- svc -n default myservice --output json`,
 	},
 }
 
+// populated by goreleaser
+var (
+	Version = "v0.0.0+unknown"
+)
+
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print kubectl-neat version",
