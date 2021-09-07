@@ -11,7 +11,7 @@ require (
 	github.com/tidwall/sjson v1.0.4
 	k8s.io/apimachinery v0.17.0
 	k8s.io/client-go v0.17.0
-	k8s.io/kubernetes v1.17.0
+	k8s.io/kubernetes v1.18.19
 )
 
 replace (
