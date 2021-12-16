@@ -1,4 +1,4 @@
-module github.com/itaysk/kubectl-neat
+module github.com/itaysk/kubectl-neat/v2
 
 go 1.17
 
@@ -12,6 +12,9 @@ require (
 	k8s.io/apimachinery v0.17.0
 	k8s.io/client-go v0.17.0
 	k8s.io/kubernetes v1.17.0
+)
+
+require (
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/gogo/protobuf v1.2.2-0.20190723190241-65acae22fc9d // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
