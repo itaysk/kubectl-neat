@@ -16,7 +16,7 @@ limitations under the License.
 package main
 
 import (
-	"github.com/itaysk/kubectl-neat/v2/cmd"
+	"github.com/zzehring/kubectl-neat/v2/cmd"
 )
 
 func main() {
