@@ -52,6 +52,11 @@ func Neat(in string) (string, error) {
 				continue
 			}
 		}
+		// general neating
+		draft, err = neatMetadata(draft)
+		if err != nil {
+			return draft, fmt.Errorf("error in neatMetadata : %v", err)
+		}
 		return draft, nil
 	}
 
