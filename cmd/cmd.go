@@ -43,7 +43,6 @@ func init() {
 // Execute is the entry point for the command package
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		rootCmd.PrintErr(err) // can't use PrintErrln or PrintErrf due to a bug https://github.com/spf13/cobra/pull/894
 		os.Exit(1)
 	}
 }

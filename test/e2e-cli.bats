@@ -9,19 +9,19 @@ rootDir="./test/fixtures"
     echo $exe >&3
     run2 "$exe" --foo
     [ $status -eq 1 ]
-    [[ "$stderr" == "unknown flag: --foo" ]]
+    [[ "$stderr" == "Error: unknown flag: --foo"* ]]
 }
 
 @test "invalid args 2" {
     run2 "$exe" get --foo
     [ $status -eq 1 ]
-    [[ "$stderr" == "Error invoking kubectl"* ]]
+    [[ "$stderr" == "Error: Error invoking kubectl"* ]]
 }
 
 @test "invalid args 3" {
     run2 "$exe" foo
     [ $status -eq 1 ]
-    [[ "$stderr" == 'unknown command "foo" for "kubectl-neat"' ]]
+    [[ "$stderr" == 'Error: unknown command "foo" for "kubectl-neat"'* ]]
 }
 
 @test "local file" {
