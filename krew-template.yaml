@@ -42,3 +42,10 @@ spec:
       uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_linux_arm64.tar.gz
       sha256: ${sha256}
       bin: "./kubectl-neat"
+    - selector:
+        matchLabels:
+          os: windows
+          arch: amd64
+      uri: https://github.com/itaysk/kubectl-neat/releases/download/v2.0.3/kubectl-neat_windows_amd64.exe
+      sha256: ${sha256}
+      bin: "./kubectl-neat"
