@@ -3,7 +3,7 @@ kind: Plugin
 metadata:
   name: neat
 spec:
-  version: "v2.0.3"
+  version: "v2.0.4"
   shortDescription: Remove clutter from Kubernetes manifests to make them more readable.
   homepage: https://github.com/itaysk/kubectl-neat
   description: |
