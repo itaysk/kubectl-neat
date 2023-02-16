@@ -102,7 +102,7 @@ func neatMetadata(in string) (string, error) {
 		return in, fmt.Errorf("error deleting last-applied-configuration : %v", err)
 	}
 	// TODO: prettify this. gjson's @pretty is ok but setRaw the pretty code gives unwanted result
-	newMeta := gjson.Get(in, "{metadata.name,metadata.namespace,metadata.labels,metadata.annotations}")
+	newMeta := gjson.Get(in, "{metadata.name,metadata.namespace,metadata.labels,metadata.annotations,metadata.finalizers}")
 	in, err = sjson.Set(in, "metadata", newMeta.Value())
 	if err != nil {
 		return in, fmt.Errorf("error setting new metadata : %v", err)
