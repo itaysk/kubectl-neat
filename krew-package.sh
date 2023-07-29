@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 # This script makes a platform specific krew package
 # it assumes goreleaser had already run and created the archives and the checksums
 # Arguments:

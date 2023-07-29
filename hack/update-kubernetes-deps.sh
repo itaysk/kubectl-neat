@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 VERSION=${1#"v"}
 if [ -z "$VERSION" ]; then
