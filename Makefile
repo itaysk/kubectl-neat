@@ -43,22 +43,26 @@ dist/kubectl-neat_darwin_arm64.tar.gz dist/kubectl-neat_darwin_amd64.tar.gz dist
 	@:
 
 release: publish = 1
-release: dist/kubectl-neat_darwin_arm64.tar.gz dist/kubectl-neat_darwin_amd64.tar.gz dist/kubectl-neat_linux_arm64.tar.gz dist/kubectl-neat_linux_amd64.tar.gz dist/checksums.txt
+release: dist/kubectl-neat_darwin_arm64.tar.gz dist/kubectl-neat_darwin_amd64.tar.gz dist/kubectl-neat_linux_arm64.tar.gz dist/kubectl-neat_linux_amd64.tar.gz dist/kubectl-neat_windows_amd64 dist/checksums.txt
 	./krew-package.sh 'darwin' 'arm64' 'neat' './dist'
 	./krew-package.sh 'darwin' 'amd64' 'neat' './dist'
 	./krew-package.sh 'linux' 'arm64' 'neat' './dist'
 	./krew-package.sh 'linux' 'amd64' 'neat' './dist'
-	# merge
-	yq r --tojson "dist/kubectl-neat_darwin_amd64.yaml" > dist/darwin-amd64.json
-	yq r --tojson "dist/kubectl-neat_darwin_arm64.yaml" > dist/darwin-arm64.json
-	yq r --tojson "dist/kubectl-neat_linux_amd64.yaml" > dist/linux-amd64.json
-	yq r --tojson "dist/kubectl-neat_linux_arm64.yaml" > dist/linux-arm64.json
+	./krew-package.sh 'windows' 'amd64' 'neat' './dist'
 
+	# merge
+	yq  "dist/kubectl-neat_darwin_amd64.yaml" -o=json  > dist/darwin-amd64.json
+	yq  "dist/kubectl-neat_darwin_arm64.yaml" -o=json  > dist/darwin-arm64.json
+	yq  "dist/kubectl-neat_linux_amd64.yaml"  -o=json > dist/linux-amd64.json
+	yq  "dist/kubectl-neat_linux_arm64.yaml"  -o=json > dist/linux-arm64.json
+	yq  "dist/kubectl-neat_windows_amd64.yaml"  -o=json > dist/windows-amd64.json
 	rm dist/kubectl-neat_darwin_arm64.yaml dist/kubectl-neat_darwin_amd64.yaml dist/kubectl-neat_linux_arm64.yaml dist/kubectl-neat_linux_amd64.yaml
 	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/darwin-amd64.json' 'dist/darwin-arm64.json' > 'dist/darwin.json'
 	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/linux-amd64.json' 'dist/linux-arm64.json' > 'dist/linux.json'
 	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/linux.json' 'dist/darwin.json' > 'dist/kubectl-neat.json'
-	yq r  --prettyPrint dist/kubectl-neat.json > dist/kubectl-neat.yaml
+	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/windows-amd64.json' 'dist/windows-amd64.json' > 'dist/kubectl-neat.json'
+
+	yq  --prettyPrint dist/kubectl-neat.json > dist/kubectl-neat.yaml
 	rm dist/kubectl-neat.json dist/darwin.json dist/linux.json dist/darwin-amd64.json dist/darwin-arm64.json dist/linux-amd64.json dist/linux-arm64.json
 
 clean:

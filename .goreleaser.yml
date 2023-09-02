@@ -5,6 +5,7 @@ builds:
   goos:
     - darwin
     - linux
+    - windows
   goarch:
     - amd64
     - arm64
@@ -12,6 +13,7 @@ builds:
     - -s -w -X github.com/itaysk/kubectl-neat/cmd.Version={{ .Version }}
 archives:
 - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  allow_different_binary_count: true
 checksum:
   name_template: 'checksums.txt'
 snapshot:
