@@ -32,7 +32,7 @@ var inputFile *string
 
 func init() {
 	outputFormat = rootCmd.PersistentFlags().StringP("output", "o", "yaml", "output format: yaml or json")
-	inputFile = rootCmd.Flags().StringP("file", "f", "-", "file path to neat, or - to read from stdin")
+	inputFile = rootCmd.Flags().StringP("file", "f", "", "file path to neat, or - to read from stdin")
 	rootCmd.SetOut(os.Stdout)
 	rootCmd.SetErr(os.Stderr)
 	rootCmd.MarkFlagFilename("file")
@@ -57,6 +57,11 @@ kubectl neat -f ./my-pod.json --output yaml`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var in, out []byte
 		var err error
+
+		if *inputFile == "" {
+			return cmd.Help()
+		}
+
 		if *inputFile == "-" {
 			stdin := cmd.InOrStdin()
 			in, err = ioutil.ReadAll(stdin)
@@ -105,18 +110,14 @@ kubectl neat get -- svc -n default myservice --output json`,
 		kubectlCmd := exec.Command(kubectl, cmdArgs...)
 		kres, err := kubectlCmd.CombinedOutput()
 		if err != nil {
-			return fmt.Errorf("Error invoking kubectl as %v %v", kubectlCmd.Args, err)
+			return fmt.Errorf("Error invoking kubectl as %v %v\n", kubectlCmd.Args, err)
 		}
 		//handle the case of 0--J->J--J
 		outFormat := *outputFormat
-		kubeout := "yaml"
 		for _, arg := range args {
 			if arg == "json" || arg == "ojson" {
 				outFormat = "json"
 			}
-		}
-		if !cmd.Flag("output").Changed && kubeout == "json" {
-			outFormat = "json"
 		}
 		out, err = NeatYAMLOrJSON(kres, outFormat)
 		if err != nil {
