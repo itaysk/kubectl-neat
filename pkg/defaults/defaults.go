@@ -11,7 +11,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
-	apisv1 "k8s.io/kubernetes/pkg/apis/core/v1"
 )
 
 // NeatDefaults gets a json document representing a Kubernetes resource, and removes all fields with default values.
@@ -76,7 +75,7 @@ var decoder runtime.Decoder
 
 func init() {
 	myscheme = runtime.NewScheme()
-	apisv1.AddToScheme(myscheme)
+	RegisterDefaults(myscheme)
 	decoder = scheme.Codecs.UniversalDeserializer()
 }
 
