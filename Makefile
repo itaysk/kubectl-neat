@@ -30,13 +30,13 @@ dist/kubectl-neat_%: $(SRC)
 	GOOS=$(call underscore,$*,1) GOARCH=$(call underscore,$*,2) go build -o dist/$(@F)
 
 # release by default will not publish. run with `publish=1` to publish
-goreleaserflags = --skip-publish --snapshot
+goreleaserflags = --skip=publish --snapshot
 ifdef publish
 	goreleaserflags =
 endif
 # relase always re-builds (no dependencies on purpose)
 goreleaser: $(SRC)
-	goreleaser --rm-dist $(goreleaserflags) 
+	goreleaser --clean $(goreleaserflags) 
 
 dist/kubectl-neat_darwin_arm64.tar.gz dist/kubectl-neat_darwin_amd64.tar.gz dist/kubectl-neat_linux_arm64.tar.gz dist/kubectl-neat_linux_amd64.tar.gz dist/checksums.txt: goreleaser
 	# no op recipe
@@ -49,16 +49,16 @@ release: dist/kubectl-neat_darwin_arm64.tar.gz dist/kubectl-neat_darwin_amd64.ta
 	./krew-package.sh 'linux' 'arm64' 'neat' './dist'
 	./krew-package.sh 'linux' 'amd64' 'neat' './dist'
 	# merge
-	yq r --tojson "dist/kubectl-neat_darwin_amd64.yaml" > dist/darwin-amd64.json
-	yq r --tojson "dist/kubectl-neat_darwin_arm64.yaml" > dist/darwin-arm64.json
-	yq r --tojson "dist/kubectl-neat_linux_amd64.yaml" > dist/linux-amd64.json
-	yq r --tojson "dist/kubectl-neat_linux_arm64.yaml" > dist/linux-arm64.json
+	yq -o json "dist/kubectl-neat_darwin_amd64.yaml" > dist/darwin-amd64.json
+	yq -o json "dist/kubectl-neat_darwin_arm64.yaml" > dist/darwin-arm64.json
+	yq -o json "dist/kubectl-neat_linux_amd64.yaml" > dist/linux-amd64.json
+	yq -o json "dist/kubectl-neat_linux_arm64.yaml" > dist/linux-arm64.json
 
 	rm dist/kubectl-neat_darwin_arm64.yaml dist/kubectl-neat_darwin_amd64.yaml dist/kubectl-neat_linux_arm64.yaml dist/kubectl-neat_linux_amd64.yaml
 	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/darwin-amd64.json' 'dist/darwin-arm64.json' > 'dist/darwin.json'
 	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/linux-amd64.json' 'dist/linux-arm64.json' > 'dist/linux.json'
 	jq --slurp '.[0].spec.platforms += .[1].spec.platforms | .[0]' 'dist/linux.json' 'dist/darwin.json' > 'dist/kubectl-neat.json'
-	yq r  --prettyPrint dist/kubectl-neat.json > dist/kubectl-neat.yaml
+	yq -o yaml --prettyPrint dist/kubectl-neat.json > dist/kubectl-neat.yaml
 	rm dist/kubectl-neat.json dist/darwin.json dist/linux.json dist/darwin-amd64.json dist/darwin-arm64.json dist/linux-amd64.json dist/linux-arm64.json
 
 clean:
