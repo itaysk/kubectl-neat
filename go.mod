@@ -1,6 +1,6 @@
 module github.com/itaysk/kubectl-neat
 
-go 1.17
+go 1.22
 
 require (
 	github.com/ghodss/yaml v1.0.0
