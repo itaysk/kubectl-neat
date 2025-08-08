@@ -39,7 +39,12 @@ func TestRootCmd(t *testing.T) {
 	if err != nil {
 		t.Errorf("error readin test data file %s: %v", resourceDataYAMLPath, err)
 	}
-
+	resourceDataMultiYAMLPath := "../test/fixtures/multidoc-raw.yaml"
+	resourceDataMultiYAMLBytes, err := ioutil.ReadFile(resourceDataMultiYAMLPath)
+	resourceDataMultiYAML := string(resourceDataMultiYAMLBytes)
+	if err != nil {
+		t.Errorf("error readin test data file %s: %v", resourceDataMultiYAMLPath, err)
+	}
 	testcases := []struct {
 		args        []string
 		stdin       string
@@ -65,6 +70,12 @@ func TestRootCmd(t *testing.T) {
 			expOut:      "apiVersion",
 		},
 		{
+			args:        []string{},
+			stdin:       resourceDataMultiYAML,
+			assertError: assertErrorNil,
+			expOut:      "apiVersion",
+		},
+		{
 			args:        []string{"-f", "-"},
 			stdin:       resourceDataJSON,
 			assertError: assertErrorNil,
@@ -81,6 +92,12 @@ func TestRootCmd(t *testing.T) {
 		},
 		{
 			args:        []string{"-f", resourceDataJSONPath},
+			stdin:       "",
+			assertError: assertErrorNil,
+			expOut:      "apiVersion",
+		},
+		{
+			args:        []string{"-f", resourceDataMultiYAMLPath},
 			stdin:       "",
 			assertError: assertErrorNil,
 			expOut:      "apiVersion",

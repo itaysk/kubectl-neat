@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 	"unicode"
 
 	"github.com/ghodss/yaml"
@@ -145,26 +146,63 @@ func isJSON(s []byte) bool {
 	return bytes.HasPrefix(bytes.TrimLeftFunc(s, unicode.IsSpace), []byte{'{'})
 }
 
+func hasDashes(s []byte) bool {
+	return strings.Contains(string(s), "\n---\n")
+}
+
 // NeatYAMLOrJSON converts 'in' to json if needed, invokes neat, and converts back if needed according the the outputFormat argument: yaml/json/same
 func NeatYAMLOrJSON(in []byte, outputFormat string) (out []byte, err error) {
-	var injson, outjson string
+	var injson, outjson, outyaml string
+	var hasDocs = false
 	itsYaml := !isJSON(in)
 	if itsYaml {
-		injsonbytes, err := yaml.YAMLToJSON(in)
-		if err != nil {
-			return nil, fmt.Errorf("error converting from yaml to json : %v", err)
+		hasDocs = hasDashes(in)
+		if hasDocs {
+			documents := strings.Split(string(in), "\n---\n")
+			for i, doc := range documents {
+				injsonbytes, err := yaml.YAMLToJSON([]byte(doc))
+				if err != nil {
+					return nil, fmt.Errorf("[Doc n.%d]: error converting from yaml to json: %v", i+1, err)
+				}
+				res, err := Neat(string(injsonbytes))
+				if err != nil {
+					return nil, fmt.Errorf("error from NeatPod: %v", err)
+				}
+				outjson += res + "\n"
+				if outputFormat == "yaml" || (outputFormat == "same" && itsYaml) {
+					oyaml, err := yaml.JSONToYAML([]byte(res))
+					if err != nil {
+						return nil, fmt.Errorf("error converting from json to yaml : %v", err)
+					}
+					if i == 0 {
+						outyaml += string(oyaml)
+					} else {
+						outyaml += "---\n" + string(oyaml)
+					}
+				}
+			}
+		} else {
+			injsonbytes, err := yaml.YAMLToJSON([]byte(in))
+			if err != nil {
+				return nil, fmt.Errorf("error converting from yaml to json: %v", err)
+			}
+			injson = string(injsonbytes)
+			outjson, err = Neat(injson)
 		}
-		injson = string(injsonbytes)
 	} else {
 		injson = string(in)
+		outjson, err = Neat(injson)
 	}
 
-	outjson, err = Neat(injson)
 	if err != nil {
 		return nil, fmt.Errorf("error neating : %v", err)
 	}
 
 	if outputFormat == "yaml" || (outputFormat == "same" && itsYaml) {
+		if hasDocs {
+			out = []byte(outyaml)
+			return
+		}
 		out, err = yaml.JSONToYAML([]byte(outjson))
 		if err != nil {
 			return nil, fmt.Errorf("error converting from json to yaml : %v", err)
