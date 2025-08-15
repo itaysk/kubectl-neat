@@ -17,13 +17,20 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/itaysk/kubectl-neat/pkg/defaults"
+	"github.com/itaysk/kubectl-neat/pkg/openshift4"
+	"github.com/spf13/viper"
 
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )
+
+type plugin struct {
+	Name string
+}
 
 // Neat gets a Kubernetes resource json as string and de-clutters it to make it more readable.
 func Neat(in string) (string, error) {
@@ -87,6 +94,36 @@ func Neat(in string) (string, error) {
 	if err != nil {
 		return draft, fmt.Errorf("error in neatStatus : %v", err)
 	}
+
+	// parse plugins
+	var plugins []plugin
+	if viper.IsSet("plugins") {
+		err = viper.UnmarshalKey("plugins", &plugins)
+		if err != nil {
+			log.Fatalf("unable to decode into struct, %v", err)
+		}
+		if len(plugins) == 0 {
+			fmt.Println("empty plugins") //TODO
+		}
+	}
+
+	// plugin neating
+	for _, plugin := range plugins {
+		switch plugin.Name {
+		case "openshift4":
+			draft, err = openshift4.NeatOpenShift4(draft)
+			if err != nil {
+				return draft, fmt.Errorf("error in neatOpenShift4: %v", err)
+			}
+		default:
+			if plugin.Name == "" {
+				log.Fatalln("plugin must declare a name")
+			}
+			log.Fatalf("plugin %s not known\n", plugin.Name)
+		}
+	}
+
+	// general neating after plugins
 	draft, err = neatEmpty(draft)
 	if err != nil {
 		return draft, fmt.Errorf("error in neatEmpty : %v", err)

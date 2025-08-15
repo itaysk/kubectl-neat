@@ -1,0 +1,24 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    name: simple-docker-build
+  name: simple-docker-build
+  namespace: builds
+spec:
+  failedBuildsHistoryLimit: 5
+  output:
+    to:
+      kind: ImageStreamTag
+      name: simple-docker-build:latest
+  source:
+    contextDir: simple-docker-build
+    git:
+      uri: https://github.com/openshift-examples/container-build.git
+      ref: master
+    type: Git
+  strategy:
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - type: ConfigChange

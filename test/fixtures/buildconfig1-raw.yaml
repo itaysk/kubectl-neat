@@ -1,0 +1,35 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  creationTimestamp: "2024-09-19T13:07:16Z"
+  generation: 2
+  labels:
+    name: simple-docker-build
+  name: simple-docker-build
+  namespace: builds
+  resourceVersion: "28955"
+  uid: 9af5c86c-b01c-413a-8383-88a7fe724c27
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: simple-docker-build:latest
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: simple-docker-build
+    git:
+      uri: https://github.com/openshift-examples/container-build.git
+      ref: master
+    type: Git
+  strategy:
+    dockerStrategy: {}
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - type: ConfigChange
+status:
+  lastVersion: 1

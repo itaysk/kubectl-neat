@@ -1,0 +1,116 @@
+apiVersion: build.openshift.io/v1
+kind: Build
+metadata:
+  annotations:
+    openshift.io/build-config.name: simple-docker-build
+    openshift.io/build.number: "1"
+    openshift.io/build.pod-name: simple-docker-build-1-build
+  creationTimestamp: "2024-09-19T13:07:16Z"
+  generation: 2
+  labels:
+    buildconfig: simple-docker-build
+    name: simple-docker-build
+    openshift.io/build-config.name: simple-docker-build
+    openshift.io/build.start-policy: Serial
+  name: simple-docker-build-1
+  namespace: builds
+  ownerReferences:
+  - apiVersion: build.openshift.io/v1
+    controller: true
+    kind: BuildConfig
+    name: simple-docker-build
+    uid: 9af5c86c-b01c-413a-8383-88a7fe724c27
+  resourceVersion: "29084"
+  uid: f12ecdff-2518-4805-ba02-e370083fde49
+spec:
+  nodeSelector: null
+  output:
+    pushSecret:
+      name: builder-dockercfg-cmpgf
+    to:
+      kind: ImageStreamTag
+      name: simple-docker-build:latest
+  postCommit: {}
+  resources: {}
+  revision:
+    git:
+      author:
+        email: robert.bohne@redhat.com
+        name: Robert Bohne
+      commit: bbf247b286281c4dc1d132907e288db59a55d666
+      committer:
+        email: robert.bohne@redhat.com
+        name: Robert Bohne
+      message: Add entitled-build/Containerfile
+    type: Git
+  serviceAccount: builder
+  source:
+    contextDir: simple-docker-build
+    git:
+      uri: https://github.com/openshift-examples/container-build.git
+      ref: "master"
+    type: Git
+  strategy:
+    dockerStrategy: {}
+    type: Docker
+  triggeredBy:
+  - message: Build configuration change
+status:
+  completionTimestamp: "2024-09-19T13:07:52Z"
+  conditions:
+  - lastTransitionTime: "2024-09-19T13:07:17Z"
+    lastUpdateTime: "2024-09-19T13:07:17Z"
+    status: "False"
+    type: New
+  - lastTransitionTime: "2024-09-19T13:07:25Z"
+    lastUpdateTime: "2024-09-19T13:07:25Z"
+    status: "False"
+    type: Pending
+  - lastTransitionTime: "2024-09-19T13:07:52Z"
+    lastUpdateTime: "2024-09-19T13:07:52Z"
+    status: "False"
+    type: Running
+  - lastTransitionTime: "2024-09-19T13:07:52Z"
+    lastUpdateTime: "2024-09-19T13:07:52Z"
+    status: "True"
+    type: Complete
+  config:
+    kind: BuildConfig
+    name: simple-docker-build
+    namespace: builds
+  duration: 35000000000
+  output:
+    to:
+      imageDigest: sha256:c742d6217b0fc1ddaad410be5b2705bf4c80f45bfc5680f79f67164c3dd643df
+  outputDockerImageReference: image-registry.openshift-image-registry.svc:5000/builds/simple-docker-build:latest
+  phase: Complete
+  stages:
+  - durationMilliseconds: 543
+    name: FetchInputs
+    startTime: "2024-09-19T13:07:25Z"
+    steps:
+    - durationMilliseconds: 543
+      name: FetchGitSource
+      startTime: "2024-09-19T13:07:25Z"
+  - durationMilliseconds: 5686
+    name: PullImages
+    startTime: "2024-09-19T13:07:28Z"
+    steps:
+    - durationMilliseconds: 5686
+      name: PullBaseImage
+      startTime: "2024-09-19T13:07:28Z"
+  - durationMilliseconds: 14902
+    name: Build
+    startTime: "2024-09-19T13:07:34Z"
+    steps:
+    - durationMilliseconds: 14902
+      name: DockerBuild
+      startTime: "2024-09-19T13:07:34Z"
+  - durationMilliseconds: 1154
+    name: PushImage
+    startTime: "2024-09-19T13:07:49Z"
+    steps:
+    - durationMilliseconds: 1154
+      name: PushDockerImage
+      startTime: "2024-09-19T13:07:49Z"
+  startTimestamp: "2024-09-19T13:07:17Z"

@@ -1,0 +1,64 @@
+kind: Project
+apiVersion: project.openshift.io/v1
+metadata:
+  name: openshift-apiserver
+  uid: 3055d436-9893-41dc-a7fd-58ceb83c8010
+  resourceVersion: '6163'
+  creationTimestamp: '2024-08-19T09:50:24Z'
+  labels:
+    kubernetes.io/metadata.name: openshift-apiserver
+    olm.operatorgroup.uid/2dc1cf16-a0af-4e12-adfe-daac7d49b28c: ''
+    openshift.io/cluster-monitoring: 'true'
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: privileged
+  annotations:
+    openshift.io/node-selector: ''
+    openshift.io/sa.scc.mcs: 's0:c23,c7'
+    openshift.io/sa.scc.supplemental-groups: 1000520000/10000
+    openshift.io/sa.scc.uid-range: 1000520000/10000
+    workload.openshift.io/allowed: management
+  managedFields:
+    - manager: cluster-openshift-apiserver-operator
+      operation: Update
+      apiVersion: v1
+      time: '2024-08-19T09:50:24Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:openshift.io/node-selector': {}
+            'f:workload.openshift.io/allowed': {}
+          'f:labels':
+            .: {}
+            'f:kubernetes.io/metadata.name': {}
+            'f:openshift.io/cluster-monitoring': {}
+            'f:pod-security.kubernetes.io/audit': {}
+            'f:pod-security.kubernetes.io/enforce': {}
+            'f:pod-security.kubernetes.io/warn': {}
+    - manager: cluster-policy-controller
+      operation: Update
+      apiVersion: v1
+      time: '2024-08-19T09:50:24Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            'f:openshift.io/sa.scc.mcs': {}
+            'f:openshift.io/sa.scc.supplemental-groups': {}
+            'f:openshift.io/sa.scc.uid-range': {}
+    - manager: olm
+      operation: Update
+      apiVersion: v1
+      time: '2024-08-19T09:50:55Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            'f:olm.operatorgroup.uid/2dc1cf16-a0af-4e12-adfe-daac7d49b28c': {}
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active

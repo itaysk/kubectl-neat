@@ -1,0 +1,34 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    haproxy.router.openshift.io/timeout: 5m
+  creationTimestamp: "2024-08-19T09:59:29Z"
+  labels:
+    app: console
+  name: console
+  namespace: openshift-console
+  resourceVersion: "11695"
+  uid: cbc97ac1-0e06-4756-b26c-b354762f50e4
+spec:
+  host: console-openshift-console.apps-crc.testing
+  port:
+    targetPort: https
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: reencrypt
+  to:
+    kind: Service
+    name: console
+    weight: 100
+  wildcardPolicy: None
+status:
+  ingress:
+  - conditions:
+    - lastTransitionTime: "2024-08-19T09:59:29Z"
+      status: "True"
+      type: Admitted
+    host: console-openshift-console.apps-crc.testing
+    routerCanonicalHostname: router-default.apps-crc.testing
+    routerName: default
+    wildcardPolicy: None

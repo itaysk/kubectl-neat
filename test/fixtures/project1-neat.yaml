@@ -1,0 +1,20 @@
+kind: Project
+apiVersion: project.openshift.io/v1
+metadata:
+  name: openshift-apiserver
+  labels:
+    kubernetes.io/metadata.name: openshift-apiserver
+    olm.operatorgroup.uid/2dc1cf16-a0af-4e12-adfe-daac7d49b28c: ''
+    openshift.io/cluster-monitoring: 'true'
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: privileged
+  annotations:
+    openshift.io/node-selector: ''
+    openshift.io/sa.scc.mcs: 's0:c23,c7'
+    openshift.io/sa.scc.supplemental-groups: 1000520000/10000
+    openshift.io/sa.scc.uid-range: 1000520000/10000
+    workload.openshift.io/allowed: management
+spec:
+  finalizers:
+    - kubernetes

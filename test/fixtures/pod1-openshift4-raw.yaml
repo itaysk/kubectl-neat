@@ -1,0 +1,229 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    hypershift.openshift.io/release-image: quay.io/openshift-release-dev/ocp-release:4.15.18-multi
+    k8s.ovn.org/pod-networks: '{"default":{"ip_addresses":["10.128.1.176/23"],"mac_address":"0a:58:0a:80:01:b0","gateway_ips":["10.128.0.1"],"routes":[{"dest":"10.128.0.0/14","nextHop":"10.128.0.1"},{"dest":"172.30.0.0/16","nextHop":"10.128.0.1"},{"dest":"100.64.0.0/16","nextHop":"10.128.0.1"}],"ip_address":"10.128.1.176/23","gateway_ip":"10.128.0.1"}}'
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "ovn-kubernetes",
+          "interface": "eth0",
+          "ips": [
+              "10.128.1.176"
+          ],
+          "mac": "0a:58:0a:80:01:b0",
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted-v2
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+  creationTimestamp: "2024-09-17T19:52:06Z"
+  generateName: capi-provider-77674b845-
+  labels:
+    app: capi-provider-controller-manager
+    control-plane: capi-provider-controller-manager
+    hypershift.openshift.io/control-plane-component: capi-provider-controller-manager
+    hypershift.openshift.io/hosted-control-plane: clusters-dev05
+    hypershift.openshift.io/need-management-kas-access: "true"
+    pod-template-hash: 77674b845
+  name: capi-provider-77674b845-rxwv2
+  namespace: clusters-dev05
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: capi-provider-77674b845
+    uid: 2c429900-eb3d-4a39-b383-2e31c794219c
+  resourceVersion: "541756960"
+  uid: b650b63f-b736-4338-bd66-29c44bb5c18a
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: hypershift.openshift.io/control-plane
+            operator: In
+            values:
+            - "true"
+        weight: 50
+      - preference:
+          matchExpressions:
+          - key: hypershift.openshift.io/cluster
+            operator: In
+            values:
+            - clusters-dev05
+        weight: 100
+    podAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              hypershift.openshift.io/hosted-control-plane: clusters-dev05
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+  containers:
+  - args:
+    - --namespace
+    - $(MY_NAMESPACE)
+    - --v=4
+    - --leader-elect=true
+    command:
+    - /manager
+    env:
+    - name: MY_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    image: registry.redhat.io/multicluster-engine/cluster-api-provider-kubevirt-rhel9@sha256:a802c6fa5fbf184e98ab190811ea162f1cbb5d8955b72b598397023ac40f776a
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: manager
+    ports:
+    - containerPort: 9440
+      name: healthz
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /readyz
+        port: healthz
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000940000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /tmp/k8s-webhook-server/serving-certs
+      name: capi-webhooks-tls
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-csz2h
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: pull-secret
+  - name: capi-provider-dockercfg-q29qt
+  nodeName: dev09
+  preemptionPolicy: PreemptLowerPriority
+  priority: 100000000
+  priorityClassName: hypershift-control-plane
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000940000
+    seLinuxOptions:
+      level: s0:c31,c5
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccount: capi-provider
+  serviceAccountName: capi-provider
+  terminationGracePeriodSeconds: 10
+  tolerations:
+  - effect: NoSchedule
+    key: hypershift.openshift.io/control-plane
+    operator: Equal
+    value: "true"
+  - effect: NoSchedule
+    key: hypershift.openshift.io/cluster
+    operator: Equal
+    value: clusters-dev05
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: capi-webhooks-tls
+    secret:
+      defaultMode: 416
+      secretName: capi-webhooks-tls
+  - name: kube-api-access-csz2h
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2024-09-17T19:52:06Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2024-09-17T19:52:36Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2024-09-17T19:52:36Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2024-09-17T19:52:06Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://ed912e3d6e4692820c71226bf0107e8d28152eb3f134c3c26dc36d10a4c722b4
+    image: registry.redhat.io/multicluster-engine/cluster-api-provider-kubevirt-rhel9@sha256:a802c6fa5fbf184e98ab190811ea162f1cbb5d8955b72b598397023ac40f776a
+    imageID: registry.redhat.io/multicluster-engine/cluster-api-provider-kubevirt-rhel9@sha256:866a59dcd6cd7f380420e3a2c190c212b14f4fbe46820a02fc193ca7925063aa
+    lastState: {}
+    name: manager
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2024-09-17T19:52:18Z"
+  hostIP: 10.4.10.254
+  phase: Running
+  podIP: 10.128.1.176
+  podIPs:
+  - ip: 10.128.1.176
+  qosClass: Burstable
+  startTime: "2024-09-17T19:52:06Z"

@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    hypershift.openshift.io/release-image: quay.io/openshift-release-dev/ocp-release:4.15.18-multi
+  labels:
+    app: capi-provider-controller-manager
+    control-plane: capi-provider-controller-manager
+    hypershift.openshift.io/control-plane-component: capi-provider-controller-manager
+    hypershift.openshift.io/hosted-control-plane: clusters-dev05
+    hypershift.openshift.io/need-management-kas-access: "true"
+  name: capi-provider-77674b845-rxwv2
+  namespace: clusters-dev05
+spec:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - preference:
+          matchExpressions:
+          - key: hypershift.openshift.io/control-plane
+            operator: In
+            values:
+            - "true"
+        weight: 50
+      - preference:
+          matchExpressions:
+          - key: hypershift.openshift.io/cluster
+            operator: In
+            values:
+            - clusters-dev05
+        weight: 100
+    podAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              hypershift.openshift.io/hosted-control-plane: clusters-dev05
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+  containers:
+  - args:
+    - --namespace
+    - $(MY_NAMESPACE)
+    - --v=4
+    - --leader-elect=true
+    command:
+    - /manager
+    env:
+    - name: MY_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    image: registry.redhat.io/multicluster-engine/cluster-api-provider-kubevirt-rhel9@sha256:a802c6fa5fbf184e98ab190811ea162f1cbb5d8955b72b598397023ac40f776a
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: healthz
+    name: manager
+    ports:
+    - containerPort: 9440
+      name: healthz
+    readinessProbe:
+      httpGet:
+        path: /readyz
+        port: healthz
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      runAsNonRoot: true
+      runAsUser: 1000940000
+    volumeMounts:
+    - mountPath: /tmp/k8s-webhook-server/serving-certs
+      name: capi-webhooks-tls
+      readOnly: true
+  imagePullSecrets:
+  - name: pull-secret
+  - name: capi-provider-dockercfg-q29qt
+  preemptionPolicy: PreemptLowerPriority
+  priority: 100000000
+  priorityClassName: hypershift-control-plane
+  securityContext:
+    fsGroup: 1000940000
+    seLinuxOptions:
+      level: s0:c31,c5
+    seccompProfile:
+      type: RuntimeDefault
+  serviceAccountName: capi-provider
+  terminationGracePeriodSeconds: 10
+  tolerations:
+  - effect: NoSchedule
+    key: hypershift.openshift.io/control-plane
+    operator: Equal
+    value: "true"
+  - effect: NoSchedule
+    key: hypershift.openshift.io/cluster
+    operator: Equal
+    value: clusters-dev05
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: capi-webhooks-tls
+    secret:
+      defaultMode: 416
+      secretName: capi-webhooks-tls

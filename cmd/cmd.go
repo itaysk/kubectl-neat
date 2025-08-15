@@ -18,26 +18,62 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"log"
 	"os"
 	"os/exec"
 	"unicode"
 
 	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var outputFormat *string
 var inputFile *string
+var configFile *string
 
 func init() {
 	outputFormat = rootCmd.PersistentFlags().StringP("output", "o", "yaml", "output format: yaml or json")
 	inputFile = rootCmd.Flags().StringP("file", "f", "-", "file path to neat, or - to read from stdin")
+	configFile = rootCmd.Flags().StringP("config", "c", "", "file path of config")
+	viper.BindPFlag("config", rootCmd.Flags().Lookup("config"))
+
 	rootCmd.SetOut(os.Stdout)
 	rootCmd.SetErr(os.Stderr)
 	rootCmd.MarkFlagFilename("file")
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(versionCmd)
+
+}
+
+func initConfig() {
+	viper.SetConfigName("kubectl-neat")
+	viper.SetConfigType("yaml")
+
+	// Search current directory for config file
+	viper.AddConfigPath(".")
+
+	// Search $HOME/.config/ for config file
+	home, err := os.UserHomeDir()
+	if err == nil {
+		viper.AddConfigPath(home + "/.config/")
+	}
+
+	// If a config file was explicitly specified, use only this file
+	confFile := viper.GetString("config")
+	if confFile != "" {
+		viper.SetConfigFile(confFile)
+	}
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			fmt.Println("No config file found") //TODO
+		} else {
+			// Config file was found but another error was produced
+			log.Fatalf("Error reading in config: %s", err)
+		}
+	}
 }
 
 // Execute is the entry point for the command package
@@ -51,17 +87,23 @@ var rootCmd = &cobra.Command{
 	Use: "kubectl-neat",
 	Example: `kubectl get pod mypod -o yaml | kubectl neat
 kubectl get pod mypod -oyaml | kubectl neat -o json
+kubectl get pod mypod -c ~/.config/kubectl-neat.conf | kubectl neat -o json
 kubectl neat -f - <./my-pod.json
 kubectl neat -f ./my-pod.json
-kubectl neat -f ./my-pod.json --output yaml`,
+kubectl neat -f ./my-pod.json --output yaml
+kubectl neat -f ./my-pod.json --output yaml --config ~/.config/kubectl-neat.conf`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		initConfig()
 		var in, out []byte
 		var err error
 		if *inputFile == "-" {
 			stdin := cmd.InOrStdin()
-			in, err = ioutil.ReadAll(stdin)
+			in, err = io.ReadAll(stdin)
+			if err != nil {
+				return err
+			}
 		} else {
-			in, err = ioutil.ReadFile(*inputFile)
+			in, err = os.ReadFile(*inputFile)
 			if err != nil {
 				return err
 			}

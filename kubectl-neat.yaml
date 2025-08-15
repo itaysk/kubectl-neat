@@ -1,0 +1,21 @@
+# no plugins
+#plugins: {} # empty plugins
+#plugins: [] # empty plugins
+plugins:
+  - name: openshift4
+  #- name: rancher2
+  #- foo: bar # plugin must declare a name
+  #- name: foo # plugin foo not known
+
+#TODO
+ignorePaths:
+  - path: "metatdata.annotations:deployment.kubernetes.io/revision"
+  - path: "spec.template.metadata.annotations:kubectl.kubernetes.io/restartedAt"
+# See https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/
+  - kind: Node
+    jsonPointers: /metadata/labels/node-role.kubernetes.io~1worker
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas
+

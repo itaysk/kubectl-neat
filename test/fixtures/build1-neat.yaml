@@ -1,0 +1,45 @@
+apiVersion: build.openshift.io/v1
+kind: Build
+metadata:
+  annotations:
+    openshift.io/build-config.name: simple-docker-build
+    openshift.io/build.number: "1"
+    openshift.io/build.pod-name: simple-docker-build-1-build
+  labels:
+    buildconfig: simple-docker-build
+    name: simple-docker-build
+    openshift.io/build-config.name: simple-docker-build
+    openshift.io/build.start-policy: Serial
+  name: simple-docker-build-1
+  namespace: builds
+spec:
+  nodeSelector: null
+  output:
+    pushSecret:
+      name: builder-dockercfg-cmpgf
+    to:
+      kind: ImageStreamTag
+      name: simple-docker-build:latest
+  revision:
+    git:
+      author:
+        email: robert.bohne@redhat.com
+        name: Robert Bohne
+      commit: bbf247b286281c4dc1d132907e288db59a55d666
+      committer:
+        email: robert.bohne@redhat.com
+        name: Robert Bohne
+      message: Add entitled-build/Containerfile
+    type: Git
+  serviceAccount: builder
+  source:
+    contextDir: simple-docker-build
+    git:
+      uri: https://github.com/openshift-examples/container-build.git
+      ref: "master"
+    type: Git
+  strategy:
+    type: Docker
+  triggeredBy:
+  - message: Build configuration change
+  
