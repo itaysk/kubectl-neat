@@ -87,6 +87,10 @@ func Neat(in string) (string, error) {
 	if err != nil {
 		return draft, fmt.Errorf("error in neatStatus : %v", err)
 	}
+	draft, err = neatClusterIP(draft)
+	if err != nil {
+		return draft, fmt.Errorf("error in neatClusterIP : %v", err)
+	}
 	draft, err = neatEmpty(draft)
 	if err != nil {
 		return draft, fmt.Errorf("error in neatEmpty : %v", err)
@@ -112,6 +116,10 @@ func neatMetadata(in string) (string, error) {
 
 func neatStatus(in string) (string, error) {
 	return sjson.Delete(in, "status")
+}
+
+func neatClusterIP(in string) (string, error) {
+	return sjson.Delete(in, "spec.clusterIP")
 }
 
 func neatScheduler(in string) (string, error) {
