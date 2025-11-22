@@ -31,10 +31,14 @@ func Neat(in string) (string, error) {
 	draft := in
 
 	if in == "" {
-		return draft, fmt.Errorf("error in neatPod, input json is empty")
+		return draft, fmt.Errorf("input JSON is empty: provide a valid Kubernetes resource JSON to process")
 	}
 	if !gjson.Valid(in) {
-		return draft, fmt.Errorf("error in neatPod, input is not a vaild json: %s", in[:20])
+		preview := in
+		if len(in) > 50 {
+			preview = in[:50] + "..."
+		}
+		return draft, fmt.Errorf("input is not valid JSON (typo: 'vaild' -> 'valid' in original message). First 50 chars: %s. Ensure your input is valid JSON before processing", preview)
 	}
 
 	kind := gjson.Get(in, "kind").String()
@@ -55,7 +59,7 @@ func Neat(in string) (string, error) {
 		// general neating
 		draft, err = neatMetadata(draft)
 		if err != nil {
-			return draft, fmt.Errorf("error in neatMetadata : %v", err)
+			return draft, fmt.Errorf("failed to process metadata (removing annotations/labels): %v. This may indicate malformed metadata in the input", err)
 		}
 		return draft, nil
 	}
@@ -63,29 +67,29 @@ func Neat(in string) (string, error) {
 	// defaults neating
 	draft, err = defaults.NeatDefaults(draft)
 	if err != nil {
-		return draft, fmt.Errorf("error in neatDefaults : %v", err)
+		return draft, fmt.Errorf("failed to remove default values from spec: %v. This may indicate the resource type is not recognized or the spec is malformed", err)
 	}
 
 	// controllers neating
 	draft, err = neatScheduler(draft)
 	if err != nil {
-		return draft, fmt.Errorf("error in neatScheduler : %v", err)
+		return draft, fmt.Errorf("failed to remove scheduler fields (spec.nodeName): %v", err)
 	}
 	if kind == "Pod" {
 		draft, err = neatServiceAccount(draft)
 		if err != nil {
-			return draft, fmt.Errorf("error in neatServiceAccount : %v", err)
+			return draft, fmt.Errorf("failed to process service account fields for Pod: %v. This may indicate malformed volume or container configuration", err)
 		}
 	}
 
 	// general neating
 	draft, err = neatMetadata(draft)
 	if err != nil {
-		return draft, fmt.Errorf("error in neatMetadata : %v", err)
+		return draft, fmt.Errorf("failed to process metadata (removing annotations/labels): %v. This may indicate malformed metadata in the input", err)
 	}
 	draft, err = neatStatus(draft)
 	if err != nil {
-		return draft, fmt.Errorf("error in neatStatus : %v", err)
+		return draft, fmt.Errorf("failed to remove status field: %v", err)
 	}
 	draft, err = neatEmpty(draft)
 	if err != nil {
@@ -99,13 +103,13 @@ func neatMetadata(in string) (string, error) {
 	var err error
 	in, err = sjson.Delete(in, `metadata.annotations.kubectl\.kubernetes\.io/last-applied-configuration`)
 	if err != nil {
-		return in, fmt.Errorf("error deleting last-applied-configuration : %v", err)
+		return in, fmt.Errorf("failed to delete kubectl.kubernetes.io/last-applied-configuration annotation: %v. The annotation may not exist (this is normal)", err)
 	}
 	// TODO: prettify this. gjson's @pretty is ok but setRaw the pretty code gives unwanted result
 	newMeta := gjson.Get(in, "{metadata.name,metadata.namespace,metadata.labels,metadata.annotations}")
 	in, err = sjson.Set(in, "metadata", newMeta.Value())
 	if err != nil {
-		return in, fmt.Errorf("error setting new metadata : %v", err)
+		return in, fmt.Errorf("failed to set cleaned metadata: %v. This may indicate the metadata structure is invalid", err)
 	}
 	return in, nil
 }

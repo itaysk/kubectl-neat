@@ -22,7 +22,7 @@ func NeatDefaults(in string) (string, error) {
 	var pom metav1.PartialObjectMetadata
 	err = json.Unmarshal([]byte(in), &pom)
 	if err != nil {
-		return "", fmt.Errorf("error unmarshaling as PartialObject : %v", err)
+		return "", fmt.Errorf("failed to parse Kubernetes resource metadata: %v. Ensure the input is valid Kubernetes YAML/JSON", err)
 	}
 	if !myscheme.Recognizes(pom.GroupVersionKind()) {
 		return in, nil
@@ -34,7 +34,7 @@ func NeatDefaults(in string) (string, error) {
 	}
 	pathsToDelete, err := flatMapJSON(specJSON.String(), "spec.")
 	if err != nil {
-		return "", fmt.Errorf("error flattening json : %v", err)
+		return "", fmt.Errorf("failed to flatten spec JSON for default value detection: %v. The spec may contain invalid JSON structures", err)
 	}
 	for k, v := range pathsToDelete {
 		isDefault, err := isDefault(k, v, in)
@@ -62,7 +62,7 @@ func flatMapJSON(j string, prefix string) (map[string]interface{}, error) {
 	var jParsed map[string]interface{}
 	err := json.Unmarshal([]byte(j), &jParsed)
 	if err != nil {
-		return nil, fmt.Errorf("error unmarshaling: %v", err)
+		return nil, fmt.Errorf("failed to parse JSON for flattening: %v. Ensure the JSON is valid", err)
 	}
 	res, err := flatten.Flatten(jParsed, prefix, flatten.DotStyle)
 	if err != nil {
@@ -84,7 +84,7 @@ func init() {
 func isDefault(path string, value interface{}, objJSON string) (bool, error) {
 	computed, err := computeDefault(path, objJSON)
 	if err != nil {
-		return false, fmt.Errorf("error computing default for '%s' : %v", path, err)
+		return false, fmt.Errorf("failed to compute default value for field '%s': %v. This may indicate the resource type is not fully supported", path, err)
 	}
 	expect := fmt.Sprintf("%v", value)
 	return computed == expect, nil
@@ -94,11 +94,11 @@ func isDefault(path string, value interface{}, objJSON string) (bool, error) {
 func computeDefault(path string, objJSON string) (string, error) {
 	candidateJSON, err := sjson.Delete(objJSON, path)
 	if err != nil {
-		return "", fmt.Errorf("error deleting path to default '%s' : %v", path, err)
+		return "", fmt.Errorf("failed to remove field '%s' for default computation: %v", path, err)
 	}
 	candidate, _, err := decoder.Decode([]byte(candidateJSON), nil, nil)
 	if err != nil {
-		return "", fmt.Errorf("error decoding into kubernetes object : %v", err)
+		return "", fmt.Errorf("failed to decode Kubernetes object (API version may be unsupported): %v", err)
 	}
 
 	// why this doesn't work?
@@ -107,7 +107,7 @@ func computeDefault(path string, objJSON string) (string, error) {
 
 	resJSON, err := json.Marshal(candidate)
 	if err != nil {
-		return "", fmt.Errorf("error marshaling kubernetes object : %v", err)
+		return "", fmt.Errorf("failed to marshal Kubernetes object after defaulting: %v", err)
 	}
 	defaultValue := gjson.Get(string(resJSON), path).String()
 	return defaultValue, nil
