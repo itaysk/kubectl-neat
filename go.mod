@@ -7,7 +7,7 @@ toolchain go1.22.5
 require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/jeremywohl/flatten v0.0.0-20180923035001-588fe0d4c603
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.1
 	github.com/spf13/cobra v1.7.0
 	github.com/tidwall/gjson v1.9.3
 	github.com/tidwall/sjson v1.0.4
